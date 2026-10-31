@@ -93,6 +93,7 @@ class ObjectDetector:
         self.hand_iou_threshold = hand_iou_threshold
         self.fixed_classes = fixed_classes or FIXED_CLASSES
         self.device = 0 if torch.cuda.is_available() else 'cpu'
+        self.ignore_classes = set(c.lower() for c in (ignore_classes or set()))
 
         # Load YOLO-World
         self.model = YOLO(model_name)
