@@ -10,6 +10,8 @@ Saves labels to eval/labels/ (gitignored).
 """
 
 import json
+import os
+from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 import cv2
@@ -21,6 +23,22 @@ LABELS_DIR = Path("eval/labels")
 LABELS_DIR.mkdir(parents=True, exist_ok=True)
 AI_LABELS_DIR = Path("eval/labels_ai")
 AI_FRAMES_DIR = Path("eval/ai_frames")
+
+
+def save_labels_atomic(labels_path: Path, data: dict):
+    """Atomically write data to labels_path using a temporary file and os.replace."""
+    labels_path.parent.mkdir(parents=True, exist_ok=True)
+    temp_path = labels_path.with_suffix(".tmp")
+    with open(temp_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+    os.replace(temp_path, labels_path)
+
+
+def get_option_idx(val: Any, options: list, default_idx: int = 0) -> int:
+    """Return index of val in options if present, else default_idx."""
+    if val in options:
+        return options.index(val)
+    return default_idx
 
 DEV_CLIPS = [
     "mytronlabs-000060-006",
@@ -198,14 +216,17 @@ def main():
             else:
                 st.success("✅ HIGH CONFIDENCE (Agreed)")
 
+            # Badge: Saved vs Not saved yet
             if key in existing_labels:
-                st.info(f"💾 Human Verified ({prev.get('source', 'manual')})")
+                st.success(f"🟢 **SAVED** (Source: `{prev.get('source', 'human_verified')}`)")
+            else:
+                st.warning("⚪ **NOT SAVED YET**")
 
         col_img, col_review = st.columns([1.3, 1.1])
 
         with col_img:
             img = load_frame_image(curr['clip'], curr['frame'])
-            show_overlay = st.checkbox("Overlay model detection bounding boxes", value=False)
+            show_overlay = st.checkbox("Overlay model detection bounding boxes", value=False, key=f"ov_{key}")
             if show_overlay:
                 disp_img = img.copy()
                 preds = load_hand_predictions(curr['clip'], curr['frame'])
@@ -220,6 +241,9 @@ def main():
                 st.image(img, use_container_width=True, caption=f"Raw Frame {curr['frame']} (No overlay)")
 
         with col_review:
+            if "last_save_msg" in st.session_state:
+                st.info(f"✅ {st.session_state['last_save_msg']}")
+
             # 1. HIDE AI side field completely. Show other fields as hints only.
             st.markdown("### 💡 AI Hints (for reference only)")
             st.markdown(
@@ -239,33 +263,58 @@ def main():
             st.markdown("#### ✍️ Human Annotation (from scratch)")
 
             FOUND_OPTIONS = ["-- choose --", "Yes (skeleton on a real hand)", "Missed (real hand, no skeleton)", "No hand"]
+            ROLE_OPTIONS = ["-- choose --", "Wearer", "Other Person (Bystander)"]
+            SIDE_OPTIONS = ["-- choose --", "left", "right", "unsure"]
+            KP_OPTIONS = ["-- choose --", "Pass", "Fail"]
+            CONTACT_OPTIONS = ["-- choose --", "none", "portable", "fixed"]
 
-            f_h1_found = st.selectbox("Hand 1 Found?*", FOUND_OPTIONS, index=0, key=f"f_h1_found_{key}")
+            # Pre-load previous values if saved
+            h1_found_idx = get_option_idx(prev.get("h1_found"), FOUND_OPTIONS, 0)
+            f_h1_found = st.selectbox("Hand 1 Found?*", FOUND_OPTIONS, index=h1_found_idx, key=f"f_h1_found_{key}")
             f_is_no = (f_h1_found == "No hand")
 
-            f_h1_role = st.selectbox("Hand 1 Role*", ["-- choose --", "Wearer", "Other Person (Bystander)"], index=0, disabled=f_is_no, key=f"f_h1_role_{key}")
-            f_h1_side = st.selectbox("Hand 1 Side*", ["-- choose --", "left", "right", "unsure"], index=0, disabled=f_is_no, key=f"f_h1_side_{key}")
-            f_h1_kp = st.selectbox("Keypoints Quality*", ["-- choose --", "Pass", "Fail"], index=0, disabled=f_is_no, key=f"f_h1_kp_{key}")
-            f_h1_contact = st.selectbox("Contact State*", ["-- choose --", "none", "portable", "fixed"], index=0, disabled=f_is_no, key=f"f_h1_contact_{key}")
-            f_h1_obj = st.text_input("Object Name* (or NO_HAND)", value="NO_HAND" if f_is_no else "", disabled=f_is_no, key=f"f_h1_obj_{key}")
+            h1_role_idx = get_option_idx(prev.get("h1_role"), ROLE_OPTIONS, 0)
+            f_h1_role = st.selectbox("Hand 1 Role*", ROLE_OPTIONS, index=h1_role_idx, disabled=f_is_no, key=f"f_h1_role_{key}")
+
+            h1_side_idx = get_option_idx(prev.get("h1_side"), SIDE_OPTIONS, 0)
+            f_h1_side = st.selectbox("Hand 1 Side*", SIDE_OPTIONS, index=h1_side_idx, disabled=f_is_no, key=f"f_h1_side_{key}")
+
+            h1_kp_idx = get_option_idx(prev.get("h1_kp_pass"), KP_OPTIONS, 0)
+            f_h1_kp = st.selectbox("Keypoints Quality*", KP_OPTIONS, index=h1_kp_idx, disabled=f_is_no, key=f"f_h1_kp_{key}")
+
+            h1_contact_idx = get_option_idx(prev.get("h1_contact"), CONTACT_OPTIONS, 0)
+            f_h1_contact = st.selectbox("Contact State*", CONTACT_OPTIONS, index=h1_contact_idx, disabled=f_is_no, key=f"f_h1_contact_{key}")
+
+            prev_h1_obj = prev.get("h1_obj", "")
+            f_h1_obj = st.text_input("Object Name* (or NO_HAND)", value="NO_HAND" if f_is_no else prev_h1_obj, disabled=f_is_no, key=f"f_h1_obj_{key}")
 
             st.markdown("##### Hand 2")
-            f_h2_found = st.selectbox("Hand 2 Found?*", FOUND_OPTIONS, index=0, key=f"f_h2_found_{key}")
+            h2_found_idx = get_option_idx(prev.get("h2_found"), FOUND_OPTIONS, 0)
+            f_h2_found = st.selectbox("Hand 2 Found?*", FOUND_OPTIONS, index=h2_found_idx, key=f"f_h2_found_{key}")
             f_h2_is_no = (f_h2_found == "No hand")
 
-            f_h2_role = st.selectbox("Hand 2 Role*", ["-- choose --", "Wearer", "Other Person (Bystander)"], index=0, disabled=f_h2_is_no, key=f"f_h2_role_{key}")
-            f_h2_side = st.selectbox("Hand 2 Side*", ["-- choose --", "right", "left", "unsure"], index=0, disabled=f_h2_is_no, key=f"f_h2_side_{key}")
-            f_h2_kp = st.selectbox("Hand 2 Keypoints*", ["-- choose --", "Pass", "Fail"], index=0, disabled=f_h2_is_no, key=f"f_h2_kp_{key}")
-            f_h2_contact = st.selectbox("Hand 2 Contact State*", ["-- choose --", "none", "portable", "fixed"], index=0, disabled=f_h2_is_no, key=f"f_h2_contact_{key}")
-            f_h2_obj = st.text_input("Hand 2 Object Name*", value="NO_HAND" if f_h2_is_no else "", disabled=f_h2_is_no, key=f"f_h2_obj_{key}")
+            h2_role_idx = get_option_idx(prev.get("h2_role"), ROLE_OPTIONS, 0)
+            f_h2_role = st.selectbox("Hand 2 Role*", ROLE_OPTIONS, index=h2_role_idx, disabled=f_h2_is_no, key=f"f_h2_role_{key}")
 
-            if st.button("💾 Save Human Label", type="primary", use_container_width=True):
+            h2_side_idx = get_option_idx(prev.get("h2_side"), ["-- choose --", "right", "left", "unsure"], 0)
+            f_h2_side = st.selectbox("Hand 2 Side*", ["-- choose --", "right", "left", "unsure"], index=h2_side_idx, disabled=f_h2_is_no, key=f"f_h2_side_{key}")
+
+            h2_kp_idx = get_option_idx(prev.get("h2_kp_pass"), KP_OPTIONS, 0)
+            f_h2_kp = st.selectbox("Hand 2 Keypoints*", KP_OPTIONS, index=h2_kp_idx, disabled=f_h2_is_no, key=f"f_h2_kp_{key}")
+
+            h2_contact_idx = get_option_idx(prev.get("h2_contact"), CONTACT_OPTIONS, 0)
+            f_h2_contact = st.selectbox("Hand 2 Contact State*", CONTACT_OPTIONS, index=h2_contact_idx, disabled=f_h2_is_no, key=f"f_h2_contact_{key}")
+
+            prev_h2_obj = prev.get("h2_obj", "")
+            f_h2_obj = st.text_input("Hand 2 Object Name*", value="NO_HAND" if f_h2_is_no else prev_h2_obj, disabled=f_h2_is_no, key=f"f_h2_obj_{key}")
+
+            if st.button("💾 Save Human Label", type="primary", use_container_width=True, key=f"btn_save_{key}"):
                 if f_h1_found == "-- choose --" or f_h2_found == "-- choose --":
-                    st.error("❌ Please answer Hand 1 Found and Hand 2 Found.")
+                    st.error("❌ Both Hand 1 Found and Hand 2 Found questions must be answered.")
                 elif not f_is_no and (f_h1_role == "-- choose --" or f_h1_side == "-- choose --" or f_h1_kp == "-- choose --" or f_h1_contact == "-- choose --" or not f_h1_obj.strip()):
-                    st.error("❌ All Hand 1 fields are required before saving.")
+                    st.error("❌ All Hand 1 fields (Role, Side, Keypoints, Contact, Object) are required before saving.")
                 elif not f_h2_is_no and (f_h2_role == "-- choose --" or f_h2_side == "-- choose --" or f_h2_kp == "-- choose --" or f_h2_contact == "-- choose --" or not f_h2_obj.strip()):
-                    st.error("❌ All Hand 2 fields are required when Hand 2 is marked found/missed.")
+                    st.error("❌ All Hand 2 fields (Role, Side, Keypoints, Contact, Object) are required when Hand 2 is marked found/missed.")
                 else:
                     existing_labels[key] = {
                         "clip": curr["clip"],
@@ -287,10 +336,40 @@ def main():
                         "source": "human_verified",
                         "queue_group": curr.get("priority_group", "")
                     }
-                    with open(labels_file, "w", encoding="utf-8") as f:
-                        json.dump(existing_labels, f, indent=2)
-                    st.success(f"Saved verified human label for frame {curr['frame']}! ({len(existing_labels)} total saved)")
+                    save_labels_atomic(labels_file, existing_labels)
+                    save_time = datetime.now().strftime("%H:%M:%S")
+                    s_h1_side = "None" if f_is_no else f_h1_side
+                    s_h1_c = "none" if f_is_no else f_h1_contact
+                    s_h1_o = "NO_HAND" if f_is_no else f_h1_obj.strip()
+                    s_h2_side = "None" if f_h2_is_no else f_h2_side
+                    s_h2_c = "none" if f_h2_is_no else f_h2_contact
+                    s_h2_o = "NO_HAND" if f_h2_is_no else f_h2_obj.strip()
+                    msg = f"Saved at {save_time}: {curr['clip']} f{curr['frame']} | H1: [{f_h1_found}, {s_h1_side}, {s_h1_c}, {s_h1_o}] | H2: [{f_h2_found}, {s_h2_side}, {s_h2_c}, {s_h2_o}]"
+                    st.session_state["last_save_msg"] = msg
+                    st.success(f"✅ {msg}")
                     st.rerun()
+
+        # Last saved labels table (last 5)
+        if existing_labels:
+            st.markdown("---")
+            st.markdown("### 📋 Last Saved Labels (Most Recent 5)")
+            last_keys = list(existing_labels.keys())[-5:]
+            recent_rows = []
+            for lk in reversed(last_keys):
+                item = existing_labels[lk]
+                recent_rows.append({
+                    "clip": item.get("clip"),
+                    "frame": item.get("frame"),
+                    "t": item.get("t"),
+                    "h1_found": item.get("h1_found"),
+                    "h1_side": item.get("h1_side"),
+                    "h1_contact": item.get("h1_contact"),
+                    "h1_obj": item.get("h1_obj"),
+                    "h2_found": item.get("h2_found"),
+                    "h2_side": item.get("h2_side"),
+                    "source": item.get("source", "unknown")
+                })
+            st.dataframe(pd.DataFrame(recent_rows), use_container_width=True)
 
     # 3. Normal form: start at "-- choose --", required, grey out when Found = No or NO_HAND.
     elif mode == "Frame Annotation (Manual)":
@@ -317,39 +396,71 @@ def main():
             st.image(disp_img, use_container_width=True, caption=f"Frame {curr['frame']} with pipeline detection overlay")
 
         key = f"{curr['clip']}_{curr['frame']}"
+        prev = existing_labels.get(key, {})
+
+        if key in existing_labels:
+            st.success(f"🟢 **SAVED** (Source: `{prev.get('source', 'manual')}`)")
+        else:
+            st.warning("⚪ **NOT SAVED YET**")
 
         with col_form:
+            if "last_save_msg" in st.session_state:
+                st.info(f"✅ {st.session_state['last_save_msg']}")
+
             FOUND_OPTIONS = ["-- choose --", "Yes (skeleton on a real hand)", "Missed (real hand, no skeleton)", "No hand"]
+            ROLE_OPTIONS = ["-- choose --", "Wearer", "Other Person (Bystander)"]
+            SIDE_OPTIONS = ["-- choose --", "left", "right", "unsure"]
+            KP_OPTIONS = ["-- choose --", "Pass", "Fail"]
+            CONTACT_OPTIONS = ["-- choose --", "none", "portable", "fixed"]
 
             st.markdown("### Hand 1 (e.g. Left / Primary)")
-            h1_found = st.selectbox("Hand 1 Found?*", FOUND_OPTIONS, index=0, key="m_h1_found")
+            h1_found_idx = get_option_idx(prev.get("h1_found"), FOUND_OPTIONS, 0)
+            h1_found = st.selectbox("Hand 1 Found?*", FOUND_OPTIONS, index=h1_found_idx, key=f"m_h1_found_{key}")
             is_no_or_nohand = (h1_found == "No hand")
 
-            h1_role = st.selectbox("Hand 1 Role*", ["-- choose --", "Wearer", "Other Person (Bystander)"], index=0, disabled=is_no_or_nohand, key="m_h1_role")
-            h1_side = st.selectbox("Hand 1 True Side*", ["-- choose --", "left", "right", "unsure"], index=0, disabled=is_no_or_nohand, key="m_h1_side")
-            h1_kp_pass = st.selectbox("21 Keypoints Quality*", ["-- choose --", "Pass", "Fail"], index=0, disabled=is_no_or_nohand, key="m_h1_kp")
-            h1_contact = st.selectbox("Contact State*", ["-- choose --", "none", "portable", "fixed"], index=0, disabled=is_no_or_nohand, key="m_h1_contact")
-            h1_obj = st.text_input("Object Name* (or NO_HAND)", value="NO_HAND" if is_no_or_nohand else "", disabled=is_no_or_nohand, key="m_h1_obj")
+            h1_role_idx = get_option_idx(prev.get("h1_role"), ROLE_OPTIONS, 0)
+            h1_role = st.selectbox("Hand 1 Role*", ROLE_OPTIONS, index=h1_role_idx, disabled=is_no_or_nohand, key=f"m_h1_role_{key}")
+
+            h1_side_idx = get_option_idx(prev.get("h1_side"), SIDE_OPTIONS, 0)
+            h1_side = st.selectbox("Hand 1 True Side*", SIDE_OPTIONS, index=h1_side_idx, disabled=is_no_or_nohand, key=f"m_h1_side_{key}")
+
+            h1_kp_idx = get_option_idx(prev.get("h1_kp_pass"), KP_OPTIONS, 0)
+            h1_kp_pass = st.selectbox("21 Keypoints Quality*", KP_OPTIONS, index=h1_kp_idx, disabled=is_no_or_nohand, key=f"m_h1_kp_{key}")
+
+            h1_contact_idx = get_option_idx(prev.get("h1_contact"), CONTACT_OPTIONS, 0)
+            h1_contact = st.selectbox("Contact State*", CONTACT_OPTIONS, index=h1_contact_idx, disabled=is_no_or_nohand, key=f"m_h1_contact_{key}")
+
+            prev_m_h1_obj = prev.get("h1_obj", "")
+            h1_obj = st.text_input("Object Name* (or NO_HAND)", value="NO_HAND" if is_no_or_nohand else prev_m_h1_obj, disabled=is_no_or_nohand, key=f"m_h1_obj_{key}")
 
             st.markdown("---")
             st.markdown("### Hand 2 (e.g. Right / Secondary)")
-            h2_found = st.selectbox("Hand 2 Found?*", FOUND_OPTIONS, index=0, key="m_h2_found")
+            h2_found_idx = get_option_idx(prev.get("h2_found"), FOUND_OPTIONS, 0)
+            h2_found = st.selectbox("Hand 2 Found?*", FOUND_OPTIONS, index=h2_found_idx, key=f"m_h2_found_{key}")
             h2_is_no = (h2_found == "No hand")
 
-            h2_role = st.selectbox("Hand 2 Role*", ["-- choose --", "Wearer", "Other Person (Bystander)"], index=0, disabled=h2_is_no, key="m_h2_role")
-            h2_side = st.selectbox("Hand 2 True Side*", ["-- choose --", "right", "left", "unsure"], index=0, disabled=h2_is_no, key="m_h2_side")
-            h2_kp_pass = st.selectbox("Hand 2 Keypoints*", ["-- choose --", "Pass", "Fail"], index=0, disabled=h2_is_no, key="m_h2_kp")
-            h2_contact = st.selectbox("Hand 2 Contact State*", ["-- choose --", "none", "portable", "fixed"], index=0, disabled=h2_is_no, key="m_h2_contact")
-            h2_obj = st.text_input("Hand 2 Object Name*", value="NO_HAND" if h2_is_no else "", disabled=h2_is_no, key="m_h2_obj")
+            h2_role_idx = get_option_idx(prev.get("h2_role"), ROLE_OPTIONS, 0)
+            h2_role = st.selectbox("Hand 2 Role*", ROLE_OPTIONS, index=h2_role_idx, disabled=h2_is_no, key=f"m_h2_role_{key}")
 
-            if st.button("💾 Save Annotation", type="primary"):
-                # Validate Hand 1
+            h2_side_idx = get_option_idx(prev.get("h2_side"), ["-- choose --", "right", "left", "unsure"], 0)
+            h2_side = st.selectbox("Hand 2 True Side*", ["-- choose --", "right", "left", "unsure"], index=h2_side_idx, disabled=h2_is_no, key=f"m_h2_side_{key}")
+
+            h2_kp_idx = get_option_idx(prev.get("h2_kp_pass"), KP_OPTIONS, 0)
+            h2_kp_pass = st.selectbox("Hand 2 Keypoints*", KP_OPTIONS, index=h2_kp_idx, disabled=h2_is_no, key=f"m_h2_kp_{key}")
+
+            h2_contact_idx = get_option_idx(prev.get("h2_contact"), CONTACT_OPTIONS, 0)
+            h2_contact = st.selectbox("Hand 2 Contact State*", CONTACT_OPTIONS, index=h2_contact_idx, disabled=h2_is_no, key=f"m_h2_contact_{key}")
+
+            prev_m_h2_obj = prev.get("h2_obj", "")
+            h2_obj = st.text_input("Hand 2 Object Name*", value="NO_HAND" if h2_is_no else prev_m_h2_obj, disabled=h2_is_no, key=f"m_h2_obj_{key}")
+
+            if st.button("💾 Save Annotation", type="primary", key=f"m_save_btn_{key}"):
                 if h1_found == "-- choose --" or h2_found == "-- choose --":
-                    st.error("❌ Please answer Hand 1 Found and Hand 2 Found.")
+                    st.error("❌ Both Hand 1 Found and Hand 2 Found questions must be answered.")
                 elif not is_no_or_nohand and (h1_role == "-- choose --" or h1_side == "-- choose --" or h1_kp_pass == "-- choose --" or h1_contact == "-- choose --" or not h1_obj.strip()):
-                    st.error("❌ All Hand 1 fields are required before saving.")
+                    st.error("❌ All Hand 1 fields (Role, Side, Keypoints, Contact, Object) are required before saving.")
                 elif not h2_is_no and (h2_role == "-- choose --" or h2_side == "-- choose --" or h2_kp_pass == "-- choose --" or h2_contact == "-- choose --" or not h2_obj.strip()):
-                    st.error("❌ All Hand 2 fields are required when Hand 2 is marked found/missed.")
+                    st.error("❌ All Hand 2 fields (Role, Side, Keypoints, Contact, Object) are required when Hand 2 is marked found/missed.")
                 else:
                     existing_labels[key] = {
                         "clip": curr["clip"],
@@ -370,9 +481,39 @@ def main():
                         "h2_obj": "NO_HAND" if h2_is_no else h2_obj.strip(),
                         "source": "manual"
                     }
-                    with open(labels_file, "w", encoding="utf-8") as f:
-                        json.dump(existing_labels, f, indent=2)
-                    st.success(f"Saved annotation for frame {curr['frame']}! ({len(existing_labels)} total labeled)")
+                    save_labels_atomic(labels_file, existing_labels)
+                    save_time = datetime.now().strftime("%H:%M:%S")
+                    s_h1_side = "None" if is_no_or_nohand else h1_side
+                    s_h1_c = "none" if is_no_or_nohand else h1_contact
+                    s_h1_o = "NO_HAND" if is_no_or_nohand else h1_obj.strip()
+                    s_h2_side = "None" if h2_is_no else h2_side
+                    s_h2_c = "none" if h2_is_no else h2_contact
+                    s_h2_o = "NO_HAND" if h2_is_no else h2_obj.strip()
+                    msg = f"Saved at {save_time}: {curr['clip']} f{curr['frame']} | H1: [{h1_found}, {s_h1_side}, {s_h1_c}, {s_h1_o}] | H2: [{h2_found}, {s_h2_side}, {s_h2_c}, {s_h2_o}]"
+                    st.session_state["last_save_msg"] = msg
+                    st.success(f"✅ {msg}")
+                    st.rerun()
+
+        if existing_labels:
+            st.markdown("---")
+            st.markdown("### 📋 Last Saved Labels (Most Recent 5)")
+            last_keys = list(existing_labels.keys())[-5:]
+            recent_rows = []
+            for lk in reversed(last_keys):
+                item = existing_labels[lk]
+                recent_rows.append({
+                    "clip": item.get("clip"),
+                    "frame": item.get("frame"),
+                    "t": item.get("t"),
+                    "h1_found": item.get("h1_found"),
+                    "h1_side": item.get("h1_side"),
+                    "h1_contact": item.get("h1_contact"),
+                    "h1_obj": item.get("h1_obj"),
+                    "h2_found": item.get("h2_found"),
+                    "h2_side": item.get("h2_side"),
+                    "source": item.get("source", "unknown")
+                })
+            st.dataframe(pd.DataFrame(recent_rows), use_container_width=True)
 
     elif mode == "Timeline Contact Scrubber":
         clip = st.sidebar.selectbox("Choose Clip", DEV_CLIPS)
@@ -395,32 +536,38 @@ def main():
         st.markdown("### ⏱️ Mark Interaction Event")
         c1, c2, c3, c4 = st.columns(4)
         with c1:
-            t_start = st.number_input("t_start (s)", value=float(t_slider), step=0.1)
+            t_start = st.number_input("t_start (s)", value=float(t_slider), step=0.1, key=f"tl_ts_{clip}_{curr_f}")
         with c2:
-            t_end = st.number_input("t_end (s)", value=float(t_slider + 1.0), step=0.1)
+            t_end = st.number_input("t_end (s)", value=float(t_slider + 1.0), step=0.1, key=f"tl_te_{clip}_{curr_f}")
         with c3:
-            hand_side = st.selectbox("Hand", ["left", "right", "unsure"])
-            state = st.selectbox("Contact State", ["none", "portable", "fixed"])
+            hand_side = st.selectbox("Hand", ["left", "right", "unsure"], key=f"tl_side_{clip}_{curr_f}")
+            state = st.selectbox("Contact State", ["none", "portable", "fixed"], key=f"tl_state_{clip}_{curr_f}")
         with c4:
-            obj_name = st.text_input("Object Name (e.g. tape dispenser, saw, roller)")
+            obj_name = st.text_input("Object Name (e.g. tape dispenser, saw, roller)", key=f"tl_obj_{clip}_{curr_f}")
 
         contacts_csv = LABELS_DIR / "contacts_ground_truth.csv"
-        if st.button("➕ Add Contact Event"):
-            new_row = {
-                "clip": clip,
-                "t_start": t_start,
-                "t_end": t_end,
-                "hand": hand_side,
-                "state": state,
-                "object_name": obj_name,
-            }
-            if contacts_csv.exists():
-                df = pd.read_csv(contacts_csv)
-                df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+        if st.button("➕ Add Contact Event", key=f"tl_add_btn_{clip}_{curr_f}"):
+            if not obj_name.strip():
+                st.error("❌ Object name is required.")
             else:
-                df = pd.DataFrame([new_row])
-            df.to_csv(contacts_csv, index=False)
-            st.success(f"Added event: {hand_side} touching {obj_name} ({state}) from {t_start}s to {t_end}s")
+                new_row = {
+                    "clip": clip,
+                    "t_start": t_start,
+                    "t_end": t_end,
+                    "hand": hand_side,
+                    "state": state,
+                    "object_name": obj_name.strip(),
+                }
+                contacts_csv.parent.mkdir(parents=True, exist_ok=True)
+                if contacts_csv.exists():
+                    df = pd.read_csv(contacts_csv)
+                    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+                else:
+                    df = pd.DataFrame([new_row])
+                tmp_csv = contacts_csv.with_suffix(".tmp")
+                df.to_csv(tmp_csv, index=False)
+                os.replace(tmp_csv, contacts_csv)
+                st.success(f"Added event: {hand_side} touching {obj_name} ({state}) from {t_start}s to {t_end}s")
 
         if contacts_csv.exists():
             st.markdown("#### Existing Contact Ground Truth")

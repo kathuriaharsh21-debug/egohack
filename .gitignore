@@ -5,6 +5,7 @@ weights/
 frames/
 dev_frames/
 eval/labels/
+eval/labels_backup*/
 eval/labels_ai/
 eval/ai_frames/
 eval/montage/
