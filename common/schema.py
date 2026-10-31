@@ -18,6 +18,7 @@ class HandDetection:
     kp3d: List[List[float]]     # 21 landmarks: [[x, y, z], ...] in camera/world coordinates (meters)
     interp: bool                # True if interpolated/propagated, False if detected
     visible: bool               # True if detected, False if predicted (never counted as detection)
+    is_wearer: bool = True      # True if wearer's hand, False if bystander / other person
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -29,6 +30,7 @@ class HandDetection:
             "kp3d": [[round(float(c), 4) for c in pt] for pt in self.kp3d],
             "interp": bool(self.interp),
             "visible": bool(self.visible),
+            "is_wearer": bool(self.is_wearer),
         }
 
 
@@ -44,4 +46,3 @@ class FrameHands:
             "t": round(float(self.t), 4),
             "hands": [h.to_dict() if isinstance(h, HandDetection) else h for h in self.hands]
         }
-

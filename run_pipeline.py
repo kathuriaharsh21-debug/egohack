@@ -19,7 +19,8 @@ import yaml
 
 from common.io import frame_generator
 from common.validate import validate_hands_jsonl
-from hands.detect import HandDetector, create_predicted_hands
+from hands.detect import HandDetector
+from hands.metrics import calculate_metrics
 from viz.render import render_frame_hands, ensure_h264_compatible
 
 
@@ -99,8 +100,10 @@ def run_clip_pipeline(
     detector = HandDetector(
         model_path="weights/hand_landmarker.task",
         num_hands=2,
-        min_detection_confidence=0.4,
-        min_tracking_confidence=0.4,
+        min_detection_confidence=0.3,
+        min_tracking_confidence=0.3,
+        filter_cutoff=1.0,
+        filter_beta=0.01,
     )
 
     # Setup video writer
@@ -111,17 +114,13 @@ def run_clip_pipeline(
 
     frames_read = 0
     step_frames_count = 0
-    frames_with_at_least_one = 0
-    frames_with_both = 0
-
-    last_detected_hands = None
+    wearer_det_count = 0
+    wearer_dual_count = 0
     total_det_time = 0.0
 
     jsonl_lines = []
-
     t_start_total = time.perf_counter()
 
-    # Read every frame (step=1 in reader) so we output every frame in hands.jsonl and overlay
     for frame_idx, t_sec, frame in frame_generator(clip_path, step=1, max_frames=max_frames_to_read):
         frames_read += 1
         is_step_frame = (frame_idx % step == 0)
@@ -138,28 +137,25 @@ def run_clip_pipeline(
             )
             dt = time.perf_counter() - t0
             total_det_time += dt
-            last_detected_hands = frame_hands
 
-            # Only count actual detections (visible=True)
-            num_detected = len(frame_hands.hands)
-            if num_detected >= 1:
-                frames_with_at_least_one += 1
-            if num_detected >= 2:
-                frames_with_both += 1
+            wearer_hands = [h for h in frame_hands.hands if h.visible and h.is_wearer]
+            if len(wearer_hands) >= 1:
+                wearer_det_count += 1
+            if len(wearer_hands) >= 2:
+                wearer_dual_count += 1
         else:
-            # Interpolated/predicted frame
-            frame_hands = create_predicted_hands(
-                last_frame_hands=last_detected_hands,
-                current_frame_idx=frame_idx,
-                current_timestamp=t_sec,
+            # Propagate forward with 1-Euro smoother and velocity prediction
+            frame_hands = detector.process_skipped_frame(
+                frame_idx=frame_idx,
+                timestamp_sec=t_sec,
             )
 
         jsonl_lines.append(frame_hands.to_dict())
 
         # Render overlay
         if writer is not None:
-            running_det = frames_with_at_least_one / max(1, step_frames_count)
-            running_dual = frames_with_both / max(1, step_frames_count)
+            running_det = wearer_det_count / max(1, step_frames_count)
+            running_dual = wearer_dual_count / max(1, step_frames_count)
             inst_fps = step_frames_count / max(1e-4, total_det_time)
             viz_frame = render_frame_hands(
                 frame=frame,
@@ -171,6 +167,7 @@ def run_clip_pipeline(
             writer.write(viz_frame)
 
     t_end_total = time.perf_counter()
+    side_flip_log = list(detector.tracker.side_flip_log)
     detector.close()
 
     if writer is not None:
@@ -189,38 +186,33 @@ def run_clip_pipeline(
     else:
         print(f"Validation: PASSED ({len(jsonl_lines)} frames written to {hands_jsonl_path.name})")
 
-    # Metrics calculation
     det_fps = step_frames_count / max(1e-4, total_det_time)
     pipeline_fps = frames_read / max(1e-4, t_end_total - t_start_total)
-    share_one_or_more = frames_with_at_least_one / max(1, step_frames_count)
-    share_both = frames_with_both / max(1, step_frames_count)
 
-    hardware_info = f"{platform.processor()} ({platform.system()})"
-
-    metrics = {
-        "clip": clip_stem,
-        "frames_evaluated_total": frames_read,
-        "detector_frames_evaluated": step_frames_count,
-        "step_stride": step,
-        "share_at_least_one_hand": round(share_one_or_more, 4),
-        "share_both_hands": round(share_both, 4),
-        "detector_fps": round(det_fps, 2),
-        "total_pipeline_fps": round(pipeline_fps, 2),
-        "hardware": hardware_info,
-        "schema_valid": valid,
-        "overlay_video": str(overlay_video_path),
-        "hands_jsonl": str(hands_jsonl_path),
-    }
+    metrics = calculate_metrics(
+        hands_jsonl_path=hands_jsonl_path,
+        fps=video_fps,
+        eval_step=step,
+        det_fps=det_fps,
+        total_fps=pipeline_fps,
+        side_flip_log=side_flip_log,
+    )
+    metrics["overlay_video"] = str(overlay_video_path)
+    metrics["hands_jsonl"] = str(hands_jsonl_path)
+    metrics["schema_valid"] = valid
 
     with open(metrics_json_path, "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
 
-    print(f"\n--- Clip {clip_stem} Results ---")
-    print(f"  Frames evaluated: {step_frames_count} detection frames ({frames_read} total frames)")
-    print(f"  Share with >= 1 hand: {metrics['share_at_least_one_hand']*100:.1f}%")
-    print(f"  Share with both hands: {metrics['share_both_hands']*100:.1f}%")
-    print(f"  Detector FPS: {metrics['detector_fps']} FPS (Hardware: {hardware_info})")
-    print(f"  Pipeline FPS (w/ render & IO): {metrics['total_pipeline_fps']} FPS")
+    print(f"\n--- Clip {clip_stem} Metrics ---")
+    print(f"  Frames evaluated: {metrics['frames_evaluated_detection']} detection frames")
+    print(f"  Wearer single hand share: {metrics['share_wearer_any_hand']*100:.1f}%")
+    print(f"  Wearer dual hands share: {metrics['share_wearer_both_hands']*100:.1f}%")
+    print(f"  All hands share (incl bystanders): {metrics['share_all_any_hand']*100:.1f}%")
+    print(f"  Total unique tracks: {metrics['total_unique_tracks']} | ID switches: {metrics['id_switches']}")
+    print(f"  Side swaps logged: {metrics['side_swaps_logged']}")
+    print(f"  Mean landmark jitter: {metrics['mean_landmark_jitter_px']} px")
+    print(f"  Detector FPS: {metrics['detector_fps']} FPS | Pipeline FPS: {metrics['total_pipeline_fps']} FPS")
 
     return metrics
 

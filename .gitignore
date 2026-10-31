@@ -4,6 +4,7 @@ out/
 weights/
 frames/
 dev_frames/
+eval/labels/
 *.mp4
 *.avi
 *.png
@@ -31,4 +32,3 @@ __pycache__/
 dist/
 build/
 .pytest_cache/
-

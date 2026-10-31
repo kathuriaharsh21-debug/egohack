@@ -22,9 +22,9 @@ HAND_CONNECTIONS = [
 ]
 
 # Color palettes (BGR format)
-# Left: Blue-Cyan, Right: Bright Amber-Orange
 COLOR_LEFT = (235, 170, 0)       # Cyan-ish blue
 COLOR_RIGHT = (0, 140, 255)      # Orange
+COLOR_BYSTANDER = (140, 140, 140)# Gray for other people
 
 COLOR_LEFT_DIM = (100, 70, 0)     # Dim Left
 COLOR_RIGHT_DIM = (0, 60, 110)    # Dim Right
@@ -45,8 +45,14 @@ def render_frame_hands(
     for hand in frame_hands.hands:
         is_pred = not hand.visible
         is_left = (hand.side.lower() == "left")
+        is_wearer = hand.is_wearer
 
-        if is_pred:
+        if not is_wearer:
+            color = COLOR_BYSTANDER
+            joint_color = (180, 180, 180)
+            thickness = 1
+            radius = 2
+        elif is_pred:
             color = COLOR_LEFT_DIM if is_left else COLOR_RIGHT_DIM
             joint_color = (80, 80, 80)
             thickness = 1
@@ -76,9 +82,9 @@ def render_frame_hands(
             wrist = (int(round(kp2d[0][0])), int(round(kp2d[0][1])))
             side_str = "L" if is_left else "R"
             pred_tag = " (pred)" if is_pred else ""
-            label_text = f"{side_str}: {hand.score:.2f}{pred_tag}"
+            bystander_tag = " [other]" if not is_wearer else f" #{hand.id}"
+            label_text = f"{side_str}{bystander_tag}: {hand.score:.2f}{pred_tag}"
 
-            # Label background box
             label_pos = (wrist[0] - 10, max(20, wrist[1] + 18))
             cv2.putText(
                 out,
@@ -114,8 +120,7 @@ def render_frame_hands(
 
     hud_text = (
         f"Frame: {frame_hands.frame:04d} ({frame_hands.t:.2f}s) | "
-        f"Hands: {len(frame_hands.hands)} | "
-        f"Det Share: {running_det_share*100:.1f}% | "
+        f"Wearer Det: {running_det_share*100:.1f}% | "
         f"Dual: {running_dual_share*100:.1f}% | "
         f"{current_fps:.1f} FPS"
     )
@@ -144,7 +149,6 @@ def ensure_h264_compatible(video_path: Path):
     ]
     try:
         subprocess.run(cmd, check=True, capture_output=True)
-        # Replace original
         video_path.unlink()
         temp_path.rename(video_path)
     except Exception as e:

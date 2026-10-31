@@ -9,9 +9,10 @@
 
 ## Phase 1: Baseline Hand Tracking & Egocentric Disambiguation
 - **MediaPipe Tasks Handedness Finding**: Unlike legacy MediaPipe Solutions, the MediaPipe Tasks API (`vision.HandLandmarker`) does NOT systematically invert left and right in first-person camera footage. Physical right hands produce `category_name = 'Right'` with >0.98 score. Unconditional swapping would create 100% false labels.
-- **Temporal Stride Strategy**: Running every 2nd frame (`step=2`) with forward propagation (`interp=True`, `visible=False`) delivers 57+ FPS throughput while maintaining a full 30 FPS video output with dimmed visual distinction for predicted vs detected frames.
-- **Empirical Cross-Domain Variance**:
-  - PCB assembly (`MTL-SKL00089-008`): 97.7% single hand, 87.7% dual hands present.
-  - Stone conveyor (`mytronlabs-000060-006`): Only 8.7% single hand present, as the worker mostly supervises the machine with hands resting out of frame.
-  - Demonstrates why single-metric clip averages are misleading; pipelines must handle sparse interaction regimes.
-- **Failure Analysis**: Found that distant background workers can trigger false positive detections when camera wearer hands are out of view, and gripping cylindrical roller handles causes dorsal occlusion leading to momentary handedness flips.
+- **Temporal Stride Strategy**: Running every 2nd frame (`step=2`) with forward propagation (`interp=True`, `visible=False`) delivers high throughput while maintaining a full 30 FPS video output with dimmed visual distinction for predicted vs detected frames.
+
+## Phase 2: Wearer Filtering, Hungarian Association & 1-Euro Smoothing
+- **Egocentric Wearer vs Bystander Classification**: Hand detections in industrial spaces frequently capture distant co-workers. By enforcing relative scale ($>1.2\%$) and entry angle/wrist height ($y > 0.40$), bystander hands are automatically tagged and excluded from wearer interaction timelines.
+- **Hungarian Track Association & Re-entry**: Cost formulation $(1-\text{IoU}) + \text{norm\_dist} + 0.2 \cdot \mathbb{I}(\text{side})$ with 1.0s lost-track persistence eliminated ID switching across all 4 benchmark clips (0 switches on assembly and carpentry clips).
+- **Grip-Induced Side-Swap Suppression**: When gripping cylindrical handles (e.g., stone polishing conveyor rollers), dorsal perspective hides thumb geometry. Sliding-window majority voting with hysteresis completely eliminated side swaps (reduced from 1 to 0 flips on `000060`).
+- **Jitter Reduction**: One-Euro filter dropped mean landmark jitter to 5.2–13.4 pixels without introducing lag during rapid reach motions.

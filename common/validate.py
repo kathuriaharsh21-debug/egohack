@@ -72,6 +72,9 @@ def validate_hands_jsonl(jsonl_path: Path) -> Tuple[bool, List[str]]:
                 if not isinstance(h.get("visible"), bool):
                     errors.append(f"Line {idx+1}, hand {h_idx}: 'visible' must be boolean")
 
+                if "is_wearer" in h and not isinstance(h.get("is_wearer"), bool):
+                    errors.append(f"Line {idx+1}, hand {h_idx}: 'is_wearer' must be boolean")
+
             if len(errors) > 20:
                 break
 
@@ -97,4 +100,3 @@ if __name__ == "__main__":
             sys.exit(1)
     else:
         print("Usage: python validate.py <path_to_hands.jsonl>")
-

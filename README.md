@@ -30,7 +30,16 @@ python run_pipeline.py --clip mytronlabs-000060-006 --excerpt 20
 python run_pipeline.py --all --excerpt 20
 ```
 
+### Human Ground-Truth Labeling Tool
+```powershell
+streamlit run eval/label_tool.py
+```
+Provides:
+1. Stratified 100-frame annotation interface (found y/n, wearer vs bystander, side correctness, 21 points pass/fail, contact state, object name).
+2. Video timeline scrubber to mark grab ($t_{start}$) and release ($t_{end}$) times.
+3. Automatically persists ground truth to `eval/labels/` (gitignored).
+
 Outputs are saved in `out/<clip_name>/`:
-- `hands.jsonl`: per-frame hand keypoints, bounding boxes, 3D landmarks, and visibility flags.
+- `hands.jsonl`: per-frame hand keypoints, bounding boxes, 3D landmarks, wearer tags, and visibility flags.
 - `overlay.mp4`: H.264 video with colored hand skeletons, wrist side labels, HUD detection rate, and live FPS.
 - `metrics_hands.json`: detection statistics and hardware performance.

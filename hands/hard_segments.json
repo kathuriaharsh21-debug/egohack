@@ -1,0 +1,702 @@
+[
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "tool_heavy_occlusion",
+    "t_start": 4.8,
+    "t_end": 5.4,
+    "duration_sec": 0.6,
+    "notes": "Circular saw handle and motor occluding fingers and palm during wood cutting"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "dense_clutter_fast_reach",
+    "t_start": 4.8,
+    "t_end": 5.4,
+    "duration_sec": 0.6,
+    "notes": "Green battery strips, loose wires, and red tape dispenser causing visual clutter"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "industrial_dust_reflections",
+    "t_start": 4.8,
+    "t_end": 5.4,
+    "duration_sec": 0.6,
+    "notes": "Diamond polishing wheel reflections, dark metal dop fixture, abrasive sludge"
+  },
+  {
+    "clip": "mytronlabs-000060-006",
+    "category": "extreme_glare_background_people",
+    "t_start": 7.5,
+    "t_end": 10.2,
+    "duration_sec": 2.7,
+    "notes": "Outdoor doorway sunlight bloom; distant worker hand on conveyor detected as primary"
+  },
+  {
+    "clip": "mytronlabs-000060-006",
+    "category": "cylindrical_handle_side_flip",
+    "t_start": 15.4,
+    "t_end": 16.8,
+    "duration_sec": 1.4,
+    "notes": "Hand gripping pink roller handle triggers dorsal identity swap from Right to Left"
+  },
+  {
+    "clip": "mytronlabs-000060-006",
+    "category": "no_hands_stretch",
+    "t_start": 0.8333,
+    "t_end": 7.6667,
+    "duration_sec": 6.83,
+    "avg_blur_lap_var": 2378.1,
+    "avg_brightness_v": 134.2,
+    "notes": "Camera wearer hands idle or outside frame"
+  },
+  {
+    "clip": "mytronlabs-000060-006",
+    "category": "no_hands_stretch",
+    "t_start": 7.8333,
+    "t_end": 9.8,
+    "duration_sec": 1.97,
+    "avg_blur_lap_var": 2568.8,
+    "avg_brightness_v": 135.5,
+    "notes": "Camera wearer hands idle or outside frame"
+  },
+  {
+    "clip": "mytronlabs-000060-006",
+    "category": "no_hands_stretch",
+    "t_start": 10.1667,
+    "t_end": 15.4,
+    "duration_sec": 5.23,
+    "avg_blur_lap_var": 2505.0,
+    "avg_brightness_v": 130.9,
+    "notes": "Camera wearer hands idle or outside frame"
+  },
+  {
+    "clip": "mytronlabs-000060-006",
+    "category": "low_confidence",
+    "t_start": 9.93,
+    "t_end": 10.03,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 2573.73,
+    "avg_brightness_v": 134.49,
+    "notes": "Detection confidence dropped to 0.52"
+  },
+  {
+    "clip": "mytronlabs-000060-006",
+    "category": "low_confidence",
+    "t_start": 10.0,
+    "t_end": 10.1,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1977.51,
+    "avg_brightness_v": 134.31,
+    "notes": "Detection confidence dropped to 0.56"
+  },
+  {
+    "clip": "mytronlabs-000060-006",
+    "category": "low_confidence",
+    "t_start": 15.73,
+    "t_end": 15.83,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1583.72,
+    "avg_brightness_v": 136.82,
+    "notes": "Detection confidence dropped to 0.61"
+  },
+  {
+    "clip": "mytronlabs-000060-006",
+    "category": "low_confidence",
+    "t_start": 15.87,
+    "t_end": 15.97,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 2014.84,
+    "avg_brightness_v": 138.78,
+    "notes": "Detection confidence dropped to 0.52"
+  },
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "no_hands_stretch",
+    "t_start": 8.1,
+    "t_end": 14.2667,
+    "duration_sec": 6.17,
+    "avg_blur_lap_var": 1995.9,
+    "avg_brightness_v": 139.4,
+    "notes": "Camera wearer hands idle or outside frame"
+  },
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "low_confidence",
+    "t_start": 4.47,
+    "t_end": 4.57,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 2762.17,
+    "avg_brightness_v": 144.43,
+    "notes": "Detection confidence dropped to 0.58"
+  },
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "low_confidence",
+    "t_start": 4.8,
+    "t_end": 4.9,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 2855.25,
+    "avg_brightness_v": 146.84,
+    "notes": "Detection confidence dropped to 0.64"
+  },
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "low_confidence",
+    "t_start": 5.87,
+    "t_end": 5.97,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 3615.93,
+    "avg_brightness_v": 143.5,
+    "notes": "Detection confidence dropped to 0.59"
+  },
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "low_confidence",
+    "t_start": 5.93,
+    "t_end": 6.03,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 3439.26,
+    "avg_brightness_v": 143.57,
+    "notes": "Detection confidence dropped to 0.62"
+  },
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "low_confidence",
+    "t_start": 6.33,
+    "t_end": 6.43,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 3434.69,
+    "avg_brightness_v": 143.91,
+    "notes": "Detection confidence dropped to 0.61"
+  },
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "low_confidence",
+    "t_start": 6.4,
+    "t_end": 6.5,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 3413.97,
+    "avg_brightness_v": 143.28,
+    "notes": "Detection confidence dropped to 0.53"
+  },
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "low_confidence",
+    "t_start": 6.53,
+    "t_end": 6.63,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1874.83,
+    "avg_brightness_v": 146.74,
+    "notes": "Detection confidence dropped to 0.59"
+  },
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "low_confidence",
+    "t_start": 6.6,
+    "t_end": 6.7,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1749.49,
+    "avg_brightness_v": 148.1,
+    "notes": "Detection confidence dropped to 0.61"
+  },
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "low_confidence",
+    "t_start": 6.67,
+    "t_end": 6.77,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 2768.79,
+    "avg_brightness_v": 148.15,
+    "notes": "Detection confidence dropped to 0.51"
+  },
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "low_confidence",
+    "t_start": 6.73,
+    "t_end": 6.83,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 2759.63,
+    "avg_brightness_v": 148.31,
+    "notes": "Detection confidence dropped to 0.63"
+  },
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "low_confidence",
+    "t_start": 6.8,
+    "t_end": 6.9,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 3197.7,
+    "avg_brightness_v": 148.09,
+    "notes": "Detection confidence dropped to 0.53"
+  },
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "low_confidence",
+    "t_start": 6.87,
+    "t_end": 6.97,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 2936.43,
+    "avg_brightness_v": 148.31,
+    "notes": "Detection confidence dropped to 0.61"
+  },
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "low_confidence",
+    "t_start": 7.27,
+    "t_end": 7.37,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 3247.42,
+    "avg_brightness_v": 137.87,
+    "notes": "Detection confidence dropped to 0.59"
+  },
+  {
+    "clip": "MTL-SGF00106-036",
+    "category": "low_confidence",
+    "t_start": 7.53,
+    "t_end": 7.63,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 3048.03,
+    "avg_brightness_v": 136.01,
+    "notes": "Detection confidence dropped to 0.51"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 0.47,
+    "t_end": 0.57,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 4585.02,
+    "avg_brightness_v": 122.11,
+    "notes": "Detection confidence dropped to 0.51"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 0.8,
+    "t_end": 0.9,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 5537.56,
+    "avg_brightness_v": 122.6,
+    "notes": "Detection confidence dropped to 0.59"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 1.67,
+    "t_end": 1.77,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 5083.55,
+    "avg_brightness_v": 123.94,
+    "notes": "Detection confidence dropped to 0.55"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 3.47,
+    "t_end": 3.57,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 5323.36,
+    "avg_brightness_v": 126.16,
+    "notes": "Detection confidence dropped to 0.61"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 4.33,
+    "t_end": 4.43,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 4722.85,
+    "avg_brightness_v": 128.7,
+    "notes": "Detection confidence dropped to 0.55"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 4.53,
+    "t_end": 4.63,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 5507.06,
+    "avg_brightness_v": 127.34,
+    "notes": "Detection confidence dropped to 0.56"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 4.73,
+    "t_end": 4.83,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 4946.89,
+    "avg_brightness_v": 127.49,
+    "notes": "Detection confidence dropped to 0.62"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 4.8,
+    "t_end": 4.9,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 5543.96,
+    "avg_brightness_v": 128.6,
+    "notes": "Detection confidence dropped to 0.50"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 7.33,
+    "t_end": 7.43,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 5861.61,
+    "avg_brightness_v": 125.18,
+    "notes": "Detection confidence dropped to 0.64"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 8.07,
+    "t_end": 8.17,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 5307.02,
+    "avg_brightness_v": 125.39,
+    "notes": "Detection confidence dropped to 0.52"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 8.93,
+    "t_end": 9.03,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 4722.68,
+    "avg_brightness_v": 125.62,
+    "notes": "Detection confidence dropped to 0.52"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 9.53,
+    "t_end": 9.63,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 5293.61,
+    "avg_brightness_v": 126.84,
+    "notes": "Detection confidence dropped to 0.60"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 10.87,
+    "t_end": 10.97,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 5898.32,
+    "avg_brightness_v": 129.0,
+    "notes": "Detection confidence dropped to 0.63"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 10.93,
+    "t_end": 11.03,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 5380.33,
+    "avg_brightness_v": 129.66,
+    "notes": "Detection confidence dropped to 0.55"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 13.8,
+    "t_end": 13.9,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 5028.7,
+    "avg_brightness_v": 128.09,
+    "notes": "Detection confidence dropped to 0.62"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 18.07,
+    "t_end": 18.17,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 3848.05,
+    "avg_brightness_v": 133.43,
+    "notes": "Detection confidence dropped to 0.61"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 19.2,
+    "t_end": 19.3,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1585.01,
+    "avg_brightness_v": 134.0,
+    "notes": "Detection confidence dropped to 0.61"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 19.8,
+    "t_end": 19.9,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 3324.34,
+    "avg_brightness_v": 124.39,
+    "notes": "Detection confidence dropped to 0.57"
+  },
+  {
+    "clip": "MTL-SKL00089-008",
+    "category": "low_confidence",
+    "t_start": 19.93,
+    "t_end": 20.03,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 3750.6,
+    "avg_brightness_v": 124.62,
+    "notes": "Detection confidence dropped to 0.53"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 1.8,
+    "t_end": 1.9,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 724.35,
+    "avg_brightness_v": 120.5,
+    "notes": "Detection confidence dropped to 0.60"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 1.87,
+    "t_end": 1.97,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 829.52,
+    "avg_brightness_v": 115.66,
+    "notes": "Detection confidence dropped to 0.62"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 2.07,
+    "t_end": 2.17,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 899.32,
+    "avg_brightness_v": 127.68,
+    "notes": "Detection confidence dropped to 0.62"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 2.13,
+    "t_end": 2.23,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1012.37,
+    "avg_brightness_v": 128.62,
+    "notes": "Detection confidence dropped to 0.60"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 2.2,
+    "t_end": 2.3,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 916.52,
+    "avg_brightness_v": 129.64,
+    "notes": "Detection confidence dropped to 0.62"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 2.27,
+    "t_end": 2.37,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 967.62,
+    "avg_brightness_v": 129.52,
+    "notes": "Detection confidence dropped to 0.52"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 2.33,
+    "t_end": 2.43,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 912.2,
+    "avg_brightness_v": 129.6,
+    "notes": "Detection confidence dropped to 0.59"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 2.4,
+    "t_end": 2.5,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1100.74,
+    "avg_brightness_v": 129.18,
+    "notes": "Detection confidence dropped to 0.61"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 2.6,
+    "t_end": 2.7,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1070.88,
+    "avg_brightness_v": 127.06,
+    "notes": "Detection confidence dropped to 0.55"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 2.73,
+    "t_end": 2.83,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1117.88,
+    "avg_brightness_v": 125.98,
+    "notes": "Detection confidence dropped to 0.57"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 2.8,
+    "t_end": 2.9,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1237.01,
+    "avg_brightness_v": 125.28,
+    "notes": "Detection confidence dropped to 0.62"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 3.2,
+    "t_end": 3.3,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1291.31,
+    "avg_brightness_v": 121.77,
+    "notes": "Detection confidence dropped to 0.55"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 3.27,
+    "t_end": 3.37,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1095.77,
+    "avg_brightness_v": 121.29,
+    "notes": "Detection confidence dropped to 0.64"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 4.53,
+    "t_end": 4.63,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1137.25,
+    "avg_brightness_v": 120.19,
+    "notes": "Detection confidence dropped to 0.54"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 8.27,
+    "t_end": 8.37,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1033.04,
+    "avg_brightness_v": 131.95,
+    "notes": "Detection confidence dropped to 0.59"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 9.2,
+    "t_end": 9.3,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1041.68,
+    "avg_brightness_v": 122.59,
+    "notes": "Detection confidence dropped to 0.61"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 9.27,
+    "t_end": 9.37,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1015.72,
+    "avg_brightness_v": 116.98,
+    "notes": "Detection confidence dropped to 0.53"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 10.0,
+    "t_end": 10.1,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1313.59,
+    "avg_brightness_v": 128.38,
+    "notes": "Detection confidence dropped to 0.54"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 13.13,
+    "t_end": 13.23,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 933.17,
+    "avg_brightness_v": 139.88,
+    "notes": "Detection confidence dropped to 0.56"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 13.6,
+    "t_end": 13.7,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1019.91,
+    "avg_brightness_v": 141.31,
+    "notes": "Detection confidence dropped to 0.64"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 13.67,
+    "t_end": 13.77,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1091.33,
+    "avg_brightness_v": 140.85,
+    "notes": "Detection confidence dropped to 0.57"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 17.87,
+    "t_end": 17.97,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1060.89,
+    "avg_brightness_v": 116.36,
+    "notes": "Detection confidence dropped to 0.51"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 18.33,
+    "t_end": 18.43,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1203.74,
+    "avg_brightness_v": 128.55,
+    "notes": "Detection confidence dropped to 0.58"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 18.47,
+    "t_end": 18.57,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1311.3,
+    "avg_brightness_v": 129.61,
+    "notes": "Detection confidence dropped to 0.60"
+  },
+  {
+    "clip": "mytronlabs-000003-013",
+    "category": "low_confidence",
+    "t_start": 18.6,
+    "t_end": 18.7,
+    "duration_sec": 0.1,
+    "avg_blur_lap_var": 1285.77,
+    "avg_brightness_v": 131.25,
+    "notes": "Detection confidence dropped to 0.53"
+  }
+]
