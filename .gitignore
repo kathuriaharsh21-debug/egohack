@@ -37,3 +37,6 @@ __pycache__/
 dist/
 build/
 .pytest_cache/
+
+live/recordings/
+*.avi

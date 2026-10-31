@@ -46,3 +46,7 @@ Outputs are saved in `out/<clip_name>/`:
 - `contacts.csv`: consolidated temporal contact intervals (`t_start`, `t_end`, `hand`, `state`, `object_name`, `confidence`).
 - `overlay.mp4`: H.264 video with colored hand skeletons, dashed predicted hands, object bounding boxes, and active green contact vectors.
 - `metrics_hands.json`: detection statistics and hardware performance.
+
+## Live demo
+Run `python live/app.py --source webcam` for real-time hand-object contact annotation.
+See [live/README_live.md](live/README_live.md) for full usage and keyboard controls.
