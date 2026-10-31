@@ -111,34 +111,33 @@ def load_ai_label(clip_name: str, frame_idx: int) -> Optional[dict]:
 def get_ai_review_samples() -> List[dict]:
     """Return samples ordered by eval/review_queue_100.csv (disagreements, unsure, then agreed)."""
     queue_path = Path("eval/review_queue_100.csv")
-    if queue_path.exists():
-        df_q = pd.read_csv(queue_path)
-        samples = []
-        for _, row in df_q.iterrows():
-            clip_name = row["clip"]
-            frame_num = int(row["frame"])
-            ai_data = load_ai_label(clip_name, frame_num) or {}
-            samples.append({
-                "clip": clip_name,
-                "frame": frame_num,
-                "t": float(row.get("t", 0.0)),
-                "priority_group": row.get("priority_group", "unknown"),
-                "disagreements": str(row.get("disagreements", "")),
-                "ai_data": ai_data
-            })
-        return samples
+    if not queue_path.exists():
+        return []
 
-    # Fallback if queue not yet built
-    samples = get_stratified_frames(100, seed=42)
-    augmented = []
-    for s in samples:
-        ai_data = load_ai_label(s["clip"], s["frame"]) or {}
-        augmented.append({
-            **s,
-            "ai_data": ai_data,
-            "priority_group": "default"
+    df_q = pd.read_csv(queue_path)
+    order_map = {"a_disagreement": 0, "b_unsure": 1, "c_agreed": 2}
+    if "priority_group" in df_q.columns:
+        df_q["_sort_key"] = df_q["priority_group"].map(lambda x: order_map.get(str(x), 99))
+        df_q = df_q.sort_values(by=["_sort_key"]).drop(columns=["_sort_key"])
+
+    samples = []
+    for _, row in df_q.iterrows():
+        clip_name = row["clip"]
+        frame_num = int(row["frame"])
+        ai_data = load_ai_label(clip_name, frame_num) or {}
+        grp = str(row.get("priority_group", ""))
+        default_prio = 0 if "disagreement" in grp else (1 if "unsure" in grp else 2)
+        prio = int(row.get("priority", default_prio))
+        samples.append({
+            "clip": clip_name,
+            "frame": frame_num,
+            "t": float(row.get("t", 0.0)),
+            "priority": prio,
+            "priority_group": grp,
+            "disagreements": str(row.get("disagreements", "")),
+            "ai_data": ai_data
         })
-    return augmented
+    return samples
 
 
 def main():
@@ -164,30 +163,40 @@ def main():
                 existing_labels = {}
 
     if mode == "Review AI Labels (Phase 2)":
+        queue_path = Path("eval/review_queue_100.csv")
+        if not queue_path.exists():
+            st.error("⚠️ Review queue file `eval/review_queue_100.csv` is missing. Please generate it before running Review mode.")
+            return
+
         samples = get_ai_review_samples()
         total_samples = len(samples)
+        if total_samples == 0:
+            st.warning("⚠️ Review queue `eval/review_queue_100.csv` is empty.")
+            return
+
         verified_count = sum(1 for s in samples if f"{s['clip']}_{s['frame']}" in existing_labels)
 
         st.sidebar.markdown(f"### Review Progress: **{verified_count} / {total_samples}**")
         st.sidebar.progress(verified_count / max(1, total_samples))
-        st.sidebar.caption("Ordering: ⚠️ Low confidence / Unsure frames first, then Medium, then High.")
+        st.sidebar.caption("Ordering: ⚠️ Disagreements first, then Unsure frames, then Agreed.")
 
-        sample_idx = st.sidebar.slider("Select Sample to Review", 0, total_samples - 1, 0)
-        curr = samples[sample_idx]
+        sample_idx = st.sidebar.slider("Select Sample to Review", 0, max(0, total_samples - 1), 0)
+        curr = samples[min(sample_idx, total_samples - 1)]
         key = f"{curr['clip']}_{curr['frame']}"
-        ai_data = curr["ai_data"]
+        ai_data = curr.get("ai_data", {})
         prev = existing_labels.get(key, {})
 
         col_title, col_status = st.columns([2.5, 1.5])
         with col_title:
             st.subheader(f"Clip: `{curr['clip']}` | Frame: `{curr['frame']}` ({curr['t']}s)")
         with col_status:
-            if curr["priority"] == 0:
-                st.error("⚠️ HIGH REVIEW PRIORITY (Unsure / Low Conf)")
-            elif curr["priority"] == 1:
-                st.warning("⚡ MEDIUM CONFIDENCE")
+            prio = curr.get("priority", 0)
+            if prio == 0:
+                st.error("⚠️ HIGH REVIEW PRIORITY (Disagreements)")
+            elif prio == 1:
+                st.warning("⚡ MEDIUM CONFIDENCE (Unsure)")
             else:
-                st.success("✅ HIGH CONFIDENCE")
+                st.success("✅ HIGH CONFIDENCE (Agreed)")
 
             if key in existing_labels:
                 st.info(f"💾 Human Verified ({prev.get('source', 'manual')})")
