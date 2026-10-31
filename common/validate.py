@@ -85,6 +85,102 @@ def validate_hands_jsonl(jsonl_path: Path) -> Tuple[bool, List[str]]:
     return is_valid, errors
 
 
+def validate_objects_jsonl(jsonl_path: Path) -> Tuple[bool, List[str]]:
+    """Validate objects.jsonl structure and value ranges."""
+    errors = []
+    if not jsonl_path.exists():
+        return False, [f"File does not exist: {jsonl_path}"]
+
+    line_count = 0
+    with open(jsonl_path, "r", encoding="utf-8") as f:
+        for idx, line in enumerate(f):
+            line_count += 1
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                data = json.loads(line)
+            except Exception as e:
+                errors.append(f"Line {idx+1}: Invalid JSON - {e}")
+                if len(errors) > 20:
+                    break
+                continue
+
+            for req in ["frame", "t", "objects"]:
+                if req not in data:
+                    errors.append(f"Line {idx+1}: Missing required field '{req}'")
+
+            objects = data.get("objects", [])
+            if not isinstance(objects, list):
+                errors.append(f"Line {idx+1}: 'objects' must be a list")
+                continue
+
+            for o_idx, o in enumerate(objects):
+                for req in ["id", "label", "bbox", "score"]:
+                    if req not in o:
+                        errors.append(f"Line {idx+1}, obj {o_idx}: Missing '{req}'")
+                bbox = o.get("bbox", [])
+                if not isinstance(bbox, list) or len(bbox) != 4:
+                    errors.append(f"Line {idx+1}, obj {o_idx}: 'bbox' must be 4 floats")
+                score = o.get("score")
+                if not isinstance(score, (int, float)) or not (0.0 <= score <= 1.0):
+                    errors.append(f"Line {idx+1}, obj {o_idx}: 'score' must be in [0.0, 1.0]")
+
+            if len(errors) > 20:
+                break
+
+    if line_count == 0:
+        errors.append("File is empty")
+    return len(errors) == 0, errors
+
+
+def validate_contacts_frames_jsonl(jsonl_path: Path) -> Tuple[bool, List[str]]:
+    """Validate contacts_frames.jsonl structure and value ranges."""
+    errors = []
+    if not jsonl_path.exists():
+        return False, [f"File does not exist: {jsonl_path}"]
+
+    line_count = 0
+    with open(jsonl_path, "r", encoding="utf-8") as f:
+        for idx, line in enumerate(f):
+            line_count += 1
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                data = json.loads(line)
+            except Exception as e:
+                errors.append(f"Line {idx+1}: Invalid JSON - {e}")
+                if len(errors) > 20:
+                    break
+                continue
+
+            for req in ["frame", "t", "contacts"]:
+                if req not in data:
+                    errors.append(f"Line {idx+1}: Missing required field '{req}'")
+
+            contacts = data.get("contacts", [])
+            if not isinstance(contacts, list):
+                errors.append(f"Line {idx+1}: 'contacts' must be a list")
+                continue
+
+            for c_idx, c in enumerate(contacts):
+                for req in ["hand_id", "side", "state", "object_name", "confidence"]:
+                    if req not in c:
+                        errors.append(f"Line {idx+1}, contact {c_idx}: Missing '{req}'")
+                if c.get("state") not in ["none", "portable", "fixed"]:
+                    errors.append(f"Line {idx+1}, contact {c_idx}: 'state' must be none|portable|fixed, got {c.get('state')}")
+                if c.get("side") not in ["left", "right"]:
+                    errors.append(f"Line {idx+1}, contact {c_idx}: 'side' must be left|right, got {c.get('side')}")
+
+            if len(errors) > 20:
+                break
+
+    if line_count == 0:
+        errors.append("File is empty")
+    return len(errors) == 0, errors
+
+
 if __name__ == "__main__":
     import sys
     if len(sys.argv) > 1:

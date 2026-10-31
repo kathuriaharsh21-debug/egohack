@@ -5,6 +5,10 @@ weights/
 frames/
 dev_frames/
 eval/labels/
+eval/labels_ai/
+eval/ai_frames/
+eval/montage/
+eval/labels_second/
 *.mp4
 *.avi
 *.png

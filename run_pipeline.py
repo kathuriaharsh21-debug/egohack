@@ -18,9 +18,13 @@ import cv2
 import yaml
 
 from common.io import frame_generator
-from common.validate import validate_hands_jsonl
+from common.validate import validate_hands_jsonl, validate_objects_jsonl, validate_contacts_frames_jsonl
+from common.schema import FrameObjects, FrameContacts
 from hands.detect import HandDetector
 from hands.metrics import calculate_metrics
+from objects.detector import ObjectDetector
+from contacts.baseline import ContactEstimator
+from contacts.timeline import generate_contacts_csv
 from viz.render import render_frame_hands, ensure_h264_compatible
 
 
@@ -70,13 +74,26 @@ def run_clip_pipeline(
     clip_out_dir.mkdir(parents=True, exist_ok=True)
 
     hands_jsonl_path = clip_out_dir / "hands.jsonl"
+    objects_jsonl_path = clip_out_dir / "objects.jsonl"
+    contacts_frames_jsonl_path = clip_out_dir / "contacts_frames.jsonl"
+    contacts_csv_path = clip_out_dir / "contacts.csv"
     metrics_json_path = clip_out_dir / "metrics_hands.json"
     overlay_video_path = clip_out_dir / "overlay.mp4"
 
+    if config is None:
+        config = load_config()
+
     # Stage skip check
-    if not force and hands_jsonl_path.exists() and metrics_json_path.exists():
+    all_exist = (
+        hands_jsonl_path.exists() and
+        objects_jsonl_path.exists() and
+        contacts_frames_jsonl_path.exists() and
+        contacts_csv_path.exists() and
+        metrics_json_path.exists()
+    )
+    if not force and all_exist:
         if not render_video or overlay_video_path.exists():
-            print(f"[{clip_stem}] Outputs already exist in {clip_out_dir}, skipping (use --force to rerun).")
+            print(f"[{clip_stem}] All outputs already exist in {clip_out_dir}, skipping (use --force to rerun).")
             with open(metrics_json_path, "r", encoding="utf-8") as f:
                 return json.load(f)
 
@@ -106,6 +123,25 @@ def run_clip_pipeline(
         filter_beta=0.01,
     )
 
+    obj_cfg = config.get("objects", {})
+    fixed_classes = set(obj_cfg.get("fixed_classes", ["conveyor", "table", "shelf", "machine"]))
+    obj_detector = ObjectDetector(
+        model_name=obj_cfg.get("model", "yolov8s-worldv2.pt"),
+        classes=obj_cfg.get("classes"),
+        conf_threshold=obj_cfg.get("confidence_threshold", 0.15),
+        crop_conf_threshold=obj_cfg.get("crop_confidence_threshold", 0.08),
+        hand_iou_threshold=obj_cfg.get("hand_object_iou_threshold", 0.6),
+        fixed_classes=fixed_classes,
+    )
+
+    contact_cfg = obj_cfg.get("contact", {})
+    contact_estimator = ContactEstimator(
+        fixed_classes=fixed_classes,
+        expansion_ratio=contact_cfg.get("expansion_ratio", 0.15),
+        min_fingertips=contact_cfg.get("min_fingertips", 2),
+        min_held_frames=contact_cfg.get("min_held_frames", 3),
+    )
+
     # Setup video writer
     writer = None
     if render_video:
@@ -116,9 +152,14 @@ def run_clip_pipeline(
     step_frames_count = 0
     wearer_det_count = 0
     wearer_dual_count = 0
+    frames_with_objs = 0
+    frames_gained_obj = 0
     total_det_time = 0.0
 
-    jsonl_lines = []
+    hands_jsonl_lines = []
+    objects_jsonl_lines = []
+    contacts_jsonl_lines = []
+    last_frame_objects: Optional[FrameObjects] = None
     t_start_total = time.perf_counter()
 
     for frame_idx, t_sec, frame in frame_generator(clip_path, step=1, max_frames=max_frames_to_read):
@@ -135,22 +176,52 @@ def run_clip_pipeline(
                 width=width,
                 height=height,
             )
-            dt = time.perf_counter() - t0
-            total_det_time += dt
-
             wearer_hands = [h for h in frame_hands.hands if h.visible and h.is_wearer]
             if len(wearer_hands) >= 1:
                 wearer_det_count += 1
             if len(wearer_hands) >= 2:
                 wearer_dual_count += 1
+
+            # Detect objects
+            wearer_bboxes = [h.bbox for h in wearer_hands]
+            objs, gained = obj_detector.detect_frame(frame, wearer_bboxes)
+            if gained:
+                frames_gained_obj += 1
+            if len(objs) > 0:
+                frames_with_objs += 1
+
+            frame_objects = FrameObjects(frame=frame_idx, t=t_sec, objects=objs)
+            last_frame_objects = frame_objects
+
+            # Estimate contact
+            frame_contacts = contact_estimator.process_frame(
+                frame_idx=frame_idx,
+                timestamp_sec=t_sec,
+                wearer_hands=frame_hands.hands,
+                detected_objects=objs,
+            )
+            dt = time.perf_counter() - t0
+            total_det_time += dt
         else:
             # Propagate forward with 1-Euro smoother and velocity prediction
             frame_hands = detector.process_skipped_frame(
                 frame_idx=frame_idx,
                 timestamp_sec=t_sec,
             )
+            objs = last_frame_objects.objects if last_frame_objects else []
+            frame_objects = FrameObjects(frame=frame_idx, t=t_sec, objects=objs)
 
-        jsonl_lines.append(frame_hands.to_dict())
+            # Estimate contact
+            frame_contacts = contact_estimator.process_frame(
+                frame_idx=frame_idx,
+                timestamp_sec=t_sec,
+                wearer_hands=frame_hands.hands,
+                detected_objects=objs,
+            )
+
+        hands_jsonl_lines.append(frame_hands.to_dict())
+        objects_jsonl_lines.append(frame_objects.to_dict())
+        contacts_jsonl_lines.append(frame_contacts.to_dict())
 
         # Render overlay
         if writer is not None:
@@ -163,6 +234,8 @@ def run_clip_pipeline(
                 running_det_share=running_det,
                 running_dual_share=running_dual,
                 current_fps=inst_fps,
+                frame_objects=frame_objects,
+                frame_contacts=frame_contacts,
             )
             writer.write(viz_frame)
 
@@ -174,17 +247,33 @@ def run_clip_pipeline(
         writer.release()
         ensure_h264_compatible(overlay_video_path)
 
-    # Write hands.jsonl
+    # 1. Write hands.jsonl
     with open(hands_jsonl_path, "w", encoding="utf-8") as f:
-        for item in jsonl_lines:
+        for item in hands_jsonl_lines:
             f.write(json.dumps(item) + "\n")
 
-    # Validate output
-    valid, errors = validate_hands_jsonl(hands_jsonl_path)
-    if not valid:
-        print(f"WARNING: Schema validation failed for {hands_jsonl_path}: {errors[:5]}")
-    else:
-        print(f"Validation: PASSED ({len(jsonl_lines)} frames written to {hands_jsonl_path.name})")
+    # 2. Write objects.jsonl
+    with open(objects_jsonl_path, "w", encoding="utf-8") as f:
+        for item in objects_jsonl_lines:
+            f.write(json.dumps(item) + "\n")
+
+    # 3. Write contacts_frames.jsonl
+    with open(contacts_frames_jsonl_path, "w", encoding="utf-8") as f:
+        for item in contacts_jsonl_lines:
+            f.write(json.dumps(item) + "\n")
+
+    # 4. Write contacts.csv
+    intervals = generate_contacts_csv(clip_stem, contacts_frames_jsonl_path, contacts_csv_path)
+
+    # Validate outputs against schema
+    valid_hands, errs_hands = validate_hands_jsonl(hands_jsonl_path)
+    valid_objs, errs_objs = validate_objects_jsonl(objects_jsonl_path)
+    valid_contacts, errs_contacts = validate_contacts_frames_jsonl(contacts_frames_jsonl_path)
+
+    valid_all = valid_hands and valid_objs and valid_contacts
+    print(f"Validation: hands={valid_hands}, objects={valid_objs}, contacts_frames={valid_contacts}")
+    if not valid_all:
+        print(f"Schema warnings: {errs_hands[:3]} | {errs_objs[:3]} | {errs_contacts[:3]}")
 
     det_fps = step_frames_count / max(1e-4, total_det_time)
     pipeline_fps = frames_read / max(1e-4, t_end_total - t_start_total)
@@ -197,9 +286,57 @@ def run_clip_pipeline(
         total_fps=pipeline_fps,
         side_flip_log=side_flip_log,
     )
+
+    # Object and contact metrics
+    step_indices = [i for i in range(len(hands_jsonl_lines)) if i % step == 0]
+    fw_wearer = 0
+    fw_obj_nearby = 0
+    fw_contact = 0
+    class_counts: Dict[str, int] = {}
+    contact_states: Dict[str, int] = {"none": 0, "portable": 0, "fixed": 0}
+
+    for idx in step_indices:
+        h_f = hands_jsonl_lines[idx]
+        o_f = objects_jsonl_lines[idx]
+        c_f = contacts_jsonl_lines[idx]
+
+        w_hands = [h for h in h_f.get("hands", []) if h.get("visible", False) and h.get("is_wearer", True)]
+        objs = o_f.get("objects", [])
+        conts = [c for c in c_f.get("contacts", []) if c.get("state", "none") != "none"]
+
+        if len(w_hands) > 0:
+            fw_wearer += 1
+            if len(objs) > 0:
+                fw_obj_nearby += 1
+            if len(conts) > 0:
+                fw_contact += 1
+
+        for o in objs:
+            lbl = o.get("label", "unknown")
+            class_counts[lbl] = class_counts.get(lbl, 0) + 1
+
+        for c in c_f.get("contacts", []):
+            st = c.get("state", "none")
+            contact_states[st] = contact_states.get(st, 0) + 1
+
+    top_5 = sorted(class_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+    share_obj = (fw_obj_nearby / fw_wearer * 100.0) if fw_wearer > 0 else 0.0
+    share_cont = (fw_contact / fw_wearer * 100.0) if fw_wearer > 0 else 0.0
+
+    metrics["objects_jsonl"] = str(objects_jsonl_path)
+    metrics["contacts_frames_jsonl"] = str(contacts_frames_jsonl_path)
+    metrics["contacts_csv"] = str(contacts_csv_path)
     metrics["overlay_video"] = str(overlay_video_path)
     metrics["hands_jsonl"] = str(hands_jsonl_path)
-    metrics["schema_valid"] = valid
+    metrics["schema_valid"] = valid_all
+    metrics["frames_with_wearer_hand"] = fw_wearer
+    metrics["frames_with_obj_nearby"] = fw_obj_nearby
+    metrics["pct_wearer_with_obj_nearby"] = round(share_obj, 1)
+    metrics["frames_with_contact"] = fw_contact
+    metrics["pct_wearer_with_contact"] = round(share_cont, 1)
+    metrics["top_5_object_classes"] = top_5
+    metrics["contact_states"] = contact_states
+    metrics["frames_gained_obj_crop"] = frames_gained_obj
 
     with open(metrics_json_path, "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
@@ -208,11 +345,11 @@ def run_clip_pipeline(
     print(f"  Frames evaluated: {metrics['frames_evaluated_detection']} detection frames")
     print(f"  Wearer single hand share: {metrics['share_wearer_any_hand']*100:.1f}%")
     print(f"  Wearer dual hands share: {metrics['share_wearer_both_hands']*100:.1f}%")
-    print(f"  All hands share (incl bystanders): {metrics['share_all_any_hand']*100:.1f}%")
-    print(f"  Total unique tracks: {metrics['total_unique_tracks']} | ID switches: {metrics['id_switches']}")
-    print(f"  Side swaps logged: {metrics['side_swaps_logged']}")
-    print(f"  Mean landmark jitter: {metrics['mean_landmark_jitter_px']} px")
-    print(f"  Detector FPS: {metrics['detector_fps']} FPS | Pipeline FPS: {metrics['total_pipeline_fps']} FPS")
+    print(f"  Wearer frames with nearby object: {fw_obj_nearby}/{fw_wearer} ({share_obj:.1f}%)")
+    print(f"  Wearer frames with contact: {fw_contact}/{fw_wearer} ({share_cont:.1f}%)")
+    print(f"  Top 5 object classes: {top_5}")
+    print(f"  Frames gaining object via crop pass: {frames_gained_obj}")
+    print(f"  End-to-end Pipeline FPS: {pipeline_fps:.2f} FPS (Det+Obj+Contact FPS: {det_fps:.2f})")
 
     return metrics
 

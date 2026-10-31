@@ -9,8 +9,8 @@ dev_clips:
   - mytronlabs-000060-008
 
 data:
-  clips_dir: "data/clips"
-  clips_480p_dir: "data/clips_480p"
+  clips_dir: "C:/egohack_data/all_clips"
+  clips_480p_dir: "C:/egohack_data/clips_480p"
   weights_dir: "weights"
   out_dir: "out"
 
@@ -18,3 +18,41 @@ models:
   hand_landmarker: "weights/hand_landmarker.task"
   confidence_threshold: 0.5
 
+objects:
+  model: "yolov8s-worldv2.pt"
+  classes:
+    - wrench
+    - screwdriver
+    - drill
+    - pliers
+    - hammer
+    - box
+    - bin
+    - bottle
+    - cable
+    - part
+    - tray
+    - bag
+    - table
+    - shelf
+    - machine
+    - conveyor
+    - gloves
+    - cloth
+    - wood plank
+    - power tool
+    - tool
+    - stone slab
+  confidence_threshold: 0.15
+  crop_confidence_threshold: 0.08
+  hand_object_iou_threshold: 0.6
+  fixed_classes:
+    - conveyor
+    - table
+    - shelf
+    - machine
+  contact:
+    fingertip_indices: [4, 8, 12, 16, 20]
+    min_fingertips: 2
+    expansion_ratio: 0.15
+    min_held_frames: 3

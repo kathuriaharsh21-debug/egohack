@@ -26,7 +26,7 @@ pip install -r requirements.txt
 # Run a specific clip (first 20 seconds, every 2nd frame)
 python run_pipeline.py --clip mytronlabs-000060-006 --excerpt 20
 
-# Run all clips
+# Run all demo clips
 python run_pipeline.py --all --excerpt 20
 ```
 
@@ -41,5 +41,8 @@ Provides:
 
 Outputs are saved in `out/<clip_name>/`:
 - `hands.jsonl`: per-frame hand keypoints, bounding boxes, 3D landmarks, wearer tags, and visibility flags.
-- `overlay.mp4`: H.264 video with colored hand skeletons, wrist side labels, HUD detection rate, and live FPS.
+- `objects.jsonl`: per-frame detected objects (YOLO-World v2 open-vocabulary with two-pass hand crop).
+- `contacts_frames.jsonl`: per-frame hand contact states (`none`, `portable`, `fixed`) and touched object targets.
+- `contacts.csv`: consolidated temporal contact intervals (`t_start`, `t_end`, `hand`, `state`, `object_name`, `confidence`).
+- `overlay.mp4`: H.264 video with colored hand skeletons, dashed predicted hands, object bounding boxes, and active green contact vectors.
 - `metrics_hands.json`: detection statistics and hardware performance.
