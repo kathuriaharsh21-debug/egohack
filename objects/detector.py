@@ -42,6 +42,21 @@ def compute_iou(box1: List[float], box2: List[float]) -> float:
     return inter / union if union > 0 else 0.0
 
 
+def should_drop_object(xyxy: list, label: str, wearer_hand_bboxes: list) -> bool:
+    """Drop object if it is gloves, or matches hand box closely (IoU > 0.85 and similar size)."""
+    if label.lower() == "gloves":
+        return True
+    obj_area = max(1.0, (xyxy[2] - xyxy[0]) * (xyxy[3] - xyxy[1]))
+    for hb in wearer_hand_bboxes:
+        iou = compute_iou(xyxy, hb)
+        if iou > 0.85:
+            hb_area = max(1.0, (hb[2] - hb[0]) * (hb[3] - hb[1]))
+            ratio = obj_area / hb_area
+            if 0.7 <= ratio <= 1.4:
+                return True
+    return False
+
+
 class ObjectDetector:
     def __init__(
         self,
@@ -95,12 +110,8 @@ class ObjectDetector:
                 cls_idx = int(boxes.cls[i].cpu().numpy())
                 label = self.classes[cls_idx] if cls_idx < len(self.classes) else "object"
 
-                # Filter: drop object boxes that overlap a hand box with IoU > 0.6
-                overlaps_hand = any(
-                    compute_iou(xyxy, h_box) > self.hand_iou_threshold
-                    for h_box in wearer_hand_bboxes
-                )
-                if not overlaps_hand:
+                # Filter: drop only if gloves or matches hand box closely (IoU > 0.85 & similar size)
+                if not should_drop_object(xyxy, label, wearer_hand_bboxes):
                     raw_candidates.append({
                         "bbox": xyxy,
                         "score": score,
@@ -148,8 +159,8 @@ class ObjectDetector:
                         c_xyxy[3] + cy1,
                     ]
 
-                    # Filter IoU with hand > 0.6
-                    if compute_iou(orig_xyxy, h_box) > self.hand_iou_threshold:
+                    # Filter: drop only if gloves or matches hand box closely
+                    if should_drop_object(orig_xyxy, c_label, [h_box]):
                         continue
 
                     # Check if already found in full-frame pass (IoU > 0.5)
@@ -224,3 +235,4 @@ class ObjectDetector:
             del self.active_tracks[tid]
 
         return final_detections, gained_object
+

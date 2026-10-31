@@ -87,6 +87,18 @@
 - **GPU Hours Used**: 0.00 h (YOLO-World + 1-Euro run on CPU; NVENC video encode previously used 0.15 h)
 - **Status**: Completed.
 
+### Phase 4 Fixes (Completed)
+- **Timestamp**: 2026-11-01 00:50 IST
+- **Hours Remaining**: ~10.7 h
+- **GPU Hours Used**: 0.00 h (CPU execution)
+- **Held-Object Rule Updated**: Drop object box only if class is `gloves` or (`IoU > 0.85` and `0.7 <= area_ratio <= 1.4`).
+- **Scene Identities Confirmed**:
+  - `mytronlabs-000060-006`: Stone slab handling & polishing
+  - `MTL-SKL00089-008`: Electronics / PCB assembly
+  - `mytronlabs-000003-013`: Industrial polishing / grinding machinery (wheel & slurry)
+  - `MTL-SGF00106-036`: Woodworking / timber planing
+- **Throughput Profile (CPU)**: 4.79 video FPS (3.32 det FPS with crop pass); 132.5 ms/frame on full-frame YOLO-World.
+
 ### Major Deliverables Built
 1. **YOLO-World Object Detector**: `objects/detector.py` implementing `yolov8s-worldv2.pt` (GPL-3.0, 24.7 MB) with offline CLIP text embeddings for 22 domain classes (`wrench`, `screwdriver`, `drill`, `pliers`, `hammer`, `box`, `bin`, `bottle`, `cable`, `part`, `tray`, `bag`, `table`, `shelf`, `machine`, `conveyor`, `gloves`, `cloth`, `wood plank`, `power tool`, `tool`, `stone slab`).
 2. **Hand-Box IoU Suppression**: Drops object bounding boxes that overlap any wearer hand with IoU > 0.6.

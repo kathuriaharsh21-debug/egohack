@@ -92,10 +92,18 @@ def run_clip_pipeline(
         metrics_json_path.exists()
     )
     if not force and all_exist:
-        if not render_video or overlay_video_path.exists():
-            print(f"[{clip_stem}] All outputs already exist in {clip_out_dir}, skipping (use --force to rerun).")
+        try:
             with open(metrics_json_path, "r", encoding="utf-8") as f:
-                return json.load(f)
+                old_m = json.load(f)
+            old_frames = old_m.get("total_frames_processed", 0)
+            # If running full clip (excerpt_sec is None) but old run was only an excerpt (<1000 frames), rerun
+            if excerpt_sec is None and old_frames < 1000:
+                pass
+            elif not render_video or overlay_video_path.exists():
+                print(f"[{clip_stem}] All outputs already exist in {clip_out_dir}, skipping (use --force to rerun).")
+                return old_m
+        except Exception:
+            pass
 
     print(f"\n=======================================================")
     print(f"Processing Clip: {clip_stem}")
