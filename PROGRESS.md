@@ -132,3 +132,10 @@
   - mytronlabs-000003-013: 429.8s (7.16 min) | 12.83 pipeline FPS (6.67 det FPS) | 31.1% contact
   - MTL-SGF00106-036: 195.0s (3.25 min) | 28.50 pipeline FPS (14.95 det FPS) | 15.7% contact
   - **Total 4 Full Clips**: 1,196.7s (0.33 hours / ~20 min)
+
+### Overnight Batch Run (40 Clips on GPU, Resumable)
+- **Start Time**: 2026-11-01 02:15 IST
+- **Estimated Finish Time (ETA)**: 2026-11-01 05:30 IST (~3.25 hours)
+- **Settings**: step=2, overlay off, output to D:/egohack_data/out, per-scene vocabulary enabled
+- **Progress Log**:
+- [01/40] `MTL-SGF00106-021`: FAILED ('ObjectDetector' object has no attribute 'ignore_classes')

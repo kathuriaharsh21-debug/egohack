@@ -1,7 +1,7 @@
 # EgoHack Configuration
 demo_clips: []
 
-# Development clips (active clips in data/clips)
+# Development clips
 dev_clips:
   - MTL-SGF00106-036
   - MTL-SKL00089-008
@@ -9,10 +9,10 @@ dev_clips:
   - mytronlabs-000060-008
 
 data:
-  clips_dir: "C:/egohack_data/all_clips"
+  clips_dir: "D:/egohack_data/all_clips"
   clips_480p_dir: "C:/egohack_data/clips_480p"
   weights_dir: "weights"
-  out_dir: "C:/egohack_data/out"
+  out_dir: "D:/egohack_data/out"
 
 models:
   hand_landmarker: "weights/hand_landmarker.task"
@@ -20,39 +20,65 @@ models:
 
 objects:
   model: "yolov8s-worldv2.pt"
-  classes:
-    - wrench
-    - screwdriver
-    - drill
-    - pliers
-    - hammer
-    - box
-    - bin
-    - bottle
-    - cable
-    - part
-    - tray
-    - bag
-    - table
-    - shelf
-    - machine
-    - conveyor
-    - gloves
-    - cloth
-    - wood plank
-    - power tool
-    - tool
-    - stone slab
-  confidence_threshold: 0.15
-  crop_confidence_threshold: 0.08
+  confidence_threshold: 0.10
+  crop_confidence_threshold: 0.06
   hand_object_iou_threshold: 0.6
-  fixed_classes:
-    - conveyor
-    - table
-    - shelf
-    - machine
+  ignore_classes:
+    - "water bottle"
+    - "bottle"
+    - "phone"
+    - "shelf"
+    - "box on floor"
+    - "gloves"
+  scenes:
+    SKL:
+      classes:
+        - "green tube"
+        - "wire"
+        - "circuit board"
+        - "green sheet"
+        - "tape dispenser"
+        - "scissors"
+        - "tool"
+      fixed_classes: []
+    "000003":
+      classes:
+        - "gemstone"
+        - "polishing tool"
+        - "metal clamp"
+        - "small metal part"
+        - "grinding wheel"
+      fixed_classes:
+        - "grinding wheel"
+    "000060":
+      classes:
+        - "cloth"
+        - "stone slab"
+        - "roller"
+        - "conveyor"
+      fixed_classes:
+        - "conveyor"
+    SGF:
+      classes:
+        - "power planer"
+        - "wood plank"
+        - "drill"
+        - "saw"
+        - "tool"
+      fixed_classes: []
+    default:
+      classes:
+        - "tool"
+        - "part"
+        - "box"
+        - "machine"
+        - "table"
+      fixed_classes:
+        - "machine"
+        - "table"
   contact:
     fingertip_indices: [4, 8, 12, 16, 20]
     min_fingertips: 2
     expansion_ratio: 0.15
     min_held_frames: 2
+    min_hand_obj_iou: 0.08

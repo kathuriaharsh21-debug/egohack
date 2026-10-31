@@ -22,8 +22,8 @@ from common.validate import validate_hands_jsonl, validate_objects_jsonl, valida
 from common.schema import FrameObjects, FrameContacts
 from hands.detect import HandDetector
 from hands.metrics import calculate_metrics
-from objects.detector import ObjectDetector
-from contacts.baseline import ContactEstimator
+from objects.detector import ObjectDetector, get_scene_vocabulary_for_clip
+from contacts.baseline import ContactEstimator, run_contact_stage_from_files
 from contacts.timeline import generate_contacts_csv
 from viz.render import render_frame_hands, ensure_h264_compatible
 
@@ -67,6 +67,7 @@ def run_clip_pipeline(
     excerpt_sec: Optional[float] = None,
     force: bool = False,
     render_video: bool = True,
+    stage: str = "all",
     config: Optional[dict] = None,
 ) -> Dict[str, Any]:
     clip_stem = clip_path.stem
@@ -82,6 +83,22 @@ def run_clip_pipeline(
 
     if config is None:
         config = load_config()
+
+    if stage == "contact":
+        if not hands_jsonl_path.exists() or not objects_jsonl_path.exists():
+            raise FileNotFoundError(f"Cannot run contact stage without {hands_jsonl_path} and {objects_jsonl_path}")
+        print(f"[{clip_stem}] Running standalone Contact stage from existing hands & objects...")
+        n_c = run_contact_stage_from_files(
+            hands_jsonl_path=hands_jsonl_path,
+            objects_jsonl_path=objects_jsonl_path,
+            contacts_jsonl_path=contacts_frames_jsonl_path,
+            contacts_csv_path=contacts_csv_path,
+            clip_name=clip_stem,
+            config=config,
+        )
+        print(f"[{clip_stem}] Contact stage complete: {n_c} frames written to {contacts_csv_path}")
+        return {"contacts_frames": n_c, "clip": clip_stem}
+
 
     # Stage skip check
     all_exist = (
@@ -132,22 +149,27 @@ def run_clip_pipeline(
     )
 
     obj_cfg = config.get("objects", {})
-    fixed_classes = set(obj_cfg.get("fixed_classes", ["conveyor", "table", "shelf", "machine"]))
+    scene_classes, scene_fixed = get_scene_vocabulary_for_clip(clip_stem, config)
+    ignore_classes = set(obj_cfg.get("ignore_classes", []))
+
     obj_detector = ObjectDetector(
         model_name=obj_cfg.get("model", "yolov8s-worldv2.pt"),
-        classes=obj_cfg.get("classes"),
-        conf_threshold=obj_cfg.get("confidence_threshold", 0.15),
-        crop_conf_threshold=obj_cfg.get("crop_confidence_threshold", 0.08),
+        classes=scene_classes,
+        conf_threshold=obj_cfg.get("confidence_threshold", 0.10),
+        crop_conf_threshold=obj_cfg.get("crop_confidence_threshold", 0.06),
         hand_iou_threshold=obj_cfg.get("hand_object_iou_threshold", 0.6),
-        fixed_classes=fixed_classes,
+        fixed_classes=scene_fixed,
+        ignore_classes=ignore_classes,
     )
 
     contact_cfg = obj_cfg.get("contact", {})
     contact_estimator = ContactEstimator(
-        fixed_classes=fixed_classes,
+        fixed_classes=scene_fixed,
         expansion_ratio=contact_cfg.get("expansion_ratio", 0.15),
         min_fingertips=contact_cfg.get("min_fingertips", 2),
-        min_held_frames=contact_cfg.get("min_held_frames", 3),
+        min_held_frames=contact_cfg.get("min_held_frames", 2),
+        min_hand_obj_iou=contact_cfg.get("min_hand_obj_iou", 0.08),
+        ignore_classes=ignore_classes,
     )
 
     # Setup video writer
@@ -367,6 +389,7 @@ def main():
     parser.add_argument("--clip", type=str, default=None, help="Clip name or path to process")
     parser.add_argument("--all", action="store_true", help="Process all available clips")
     parser.add_argument("--excerpt", type=float, default=None, help="Excerpt duration in seconds (e.g. 20)")
+    parser.add_argument("--stage", type=str, default="all", choices=["all", "hands", "objects", "contact"], help="Pipeline stage to run")
     parser.add_argument("--step", type=int, default=2, help="Detection stride (default: 2)")
     parser.add_argument("--force", action="store_true", help="Force rerun even if outputs exist")
     parser.add_argument("--no-viz", action="store_true", help="Disable overlay video generation")
@@ -393,6 +416,7 @@ def main():
                 excerpt_sec=args.excerpt,
                 force=args.force,
                 render_video=not args.no_viz,
+                stage=args.stage,
                 config=config,
             )
             all_metrics.append(m)
@@ -406,6 +430,7 @@ def main():
             excerpt_sec=args.excerpt,
             force=args.force,
             render_video=not args.no_viz,
+            stage=args.stage,
             config=config,
         )
     else:

@@ -58,6 +58,24 @@ def should_drop_object(xyxy: list, label: str, wearer_hand_bboxes: list) -> bool
     return False
 
 
+def get_scene_vocabulary_for_clip(clip_stem: str, config: dict) -> Tuple[List[str], set]:
+    obj_cfg = config.get("objects", {})
+    scenes = obj_cfg.get("scenes", {})
+    if "SKL" in clip_stem:
+        s_data = scenes.get("SKL", {})
+    elif "000003" in clip_stem or "003" in clip_stem:
+        s_data = scenes.get("000003", {})
+    elif "000060" in clip_stem or "060" in clip_stem:
+        s_data = scenes.get("000060", {})
+    elif "SGF" in clip_stem:
+        s_data = scenes.get("SGF", {})
+    else:
+        s_data = scenes.get("default", {})
+    classes = s_data.get("classes") or obj_cfg.get("classes") or DEFAULT_CLASSES
+    fixed = set(s_data.get("fixed_classes") or obj_cfg.get("fixed_classes") or FIXED_CLASSES)
+    return classes, fixed
+
+
 class ObjectDetector:
     def __init__(
         self,
@@ -67,6 +85,7 @@ class ObjectDetector:
         crop_conf_threshold: float = 0.08,
         hand_iou_threshold: float = 0.6,
         fixed_classes: Optional[set] = None,
+        ignore_classes: Optional[set] = None,
     ):
         self.classes = classes or DEFAULT_CLASSES
         self.conf_threshold = conf_threshold
@@ -114,6 +133,8 @@ class ObjectDetector:
                 label = self.classes[cls_idx] if cls_idx < len(self.classes) else "object"
 
                 # Filter: drop only if gloves or matches hand box closely (IoU > 0.85 & similar size)
+                if label.lower() in self.ignore_classes:
+                    continue
                 if not should_drop_object(xyxy, label, wearer_hand_bboxes):
                     raw_candidates.append({
                         "bbox": xyxy,
