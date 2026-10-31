@@ -1,3 +1,4 @@
+import torch
 """YOLO-World Object Detector with Hand-Centric Second Pass.
 
 Detects open-vocabulary industrial and household objects for PS2 interaction.
@@ -72,6 +73,7 @@ class ObjectDetector:
         self.crop_conf_threshold = crop_conf_threshold
         self.hand_iou_threshold = hand_iou_threshold
         self.fixed_classes = fixed_classes or FIXED_CLASSES
+        self.device = 0 if torch.cuda.is_available() else 'cpu'
 
         # Load YOLO-World
         self.model = YOLO(model_name)
@@ -99,6 +101,7 @@ class ObjectDetector:
             frame_bgr,
             imgsz=480,
             conf=self.conf_threshold,
+            device=self.device,
             verbose=False
         )
 
@@ -140,6 +143,7 @@ class ObjectDetector:
                 crop,
                 imgsz=320,
                 conf=self.crop_conf_threshold,
+                device=self.device,
                 verbose=False
             )
 

@@ -118,3 +118,17 @@
 | **`SKL-008`** | 98.7% (296/300) | **91.6%** (271/296) | **11.5%** (34/296) | bottle (371), box (275), gloves (66), tray (22), shelf (20) | 187 frames | 4.04 FPS |
 | **`003-013`** | 97.0% (291/300) | **95.5%** (278/291) | **12.0%** (35/291) | bottle (661), gloves (200), tray (32), table (22), shelf (19) | 210 frames | 7.28 FPS |
 | **`SGF-036`** | 48.0% (144/300) | **93.8%** (135/144) | **12.5%** (18/144) | box (274), shelf (93), gloves (43), bottle (42), bag (25) | 20 frames | 15.12 FPS |
+
+### Phase 4 Repair & Full GPU Dev Run (Completed)
+- **Timestamp**: 2026-11-01 01:57 IST
+- **Hours Remaining**: ~9.5 h
+- **GPU Hours Used**: 0.35 h (RTX 3050 CUDA 12.1 inference)
+- **Hardware Acceleration**: Official CUDA PyTorch 2.5.1+cu121 installed; YOLO-World latency dropped from 250.2 ms to 48.16 ms (5.20x speedup).
+- **Contact Estimator Tuned**: min_held_frames set to 2 in config.yaml, doubling contact recall on SKL-008 from 20% to 45% (captures 133 ms grasps at step=2) with 0 false positives on empty frames.
+- **Transcode**: Completed 40/40 clips in C:/egohack_data/clips_480p/ (0 failures).
+- **Full Dev Clip GPU Benchmark (5,400 frames each)**:
+  - mytronlabs-000060-006: 289.7s (4.83 min) | 19.82 pipeline FPS (10.42 det FPS) | 5.7% contact
+  - MTL-SKL00089-008: 282.2s (4.70 min) | 19.69 pipeline FPS (10.21 det FPS) | 16.4% contact
+  - mytronlabs-000003-013: 429.8s (7.16 min) | 12.83 pipeline FPS (6.67 det FPS) | 31.1% contact
+  - MTL-SGF00106-036: 195.0s (3.25 min) | 28.50 pipeline FPS (14.95 det FPS) | 15.7% contact
+  - **Total 4 Full Clips**: 1,196.7s (0.33 hours / ~20 min)

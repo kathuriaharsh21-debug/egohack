@@ -12,7 +12,7 @@ data:
   clips_dir: "C:/egohack_data/all_clips"
   clips_480p_dir: "C:/egohack_data/clips_480p"
   weights_dir: "weights"
-  out_dir: "out"
+  out_dir: "C:/egohack_data/out"
 
 models:
   hand_landmarker: "weights/hand_landmarker.task"
@@ -55,4 +55,4 @@ objects:
     fingertip_indices: [4, 8, 12, 16, 20]
     min_fingertips: 2
     expansion_ratio: 0.15
-    min_held_frames: 3
+    min_held_frames: 2
