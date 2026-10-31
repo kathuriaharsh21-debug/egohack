@@ -1,0 +1,34 @@
+# Data & Outputs
+data/
+out/
+weights/
+frames/
+dev_frames/
+*.mp4
+*.avi
+*.png
+*.jpg
+*.jpeg
+
+# Model weights & caches
+*.pt
+*.pth
+*.onnx
+*.task
+
+# Credentials & environment
+kaggle.json
+.env
+
+# Virtual environment & python caches
+egohack/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+

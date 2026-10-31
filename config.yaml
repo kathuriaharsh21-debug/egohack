@@ -1,0 +1,20 @@
+# EgoHack Configuration
+demo_clips: []
+
+# Development clips (active clips in data/clips)
+dev_clips:
+  - MTL-SGF00106-036
+  - MTL-SKL00089-008
+  - mytronlabs-000003-013
+  - mytronlabs-000060-008
+
+data:
+  clips_dir: "data/clips"
+  clips_480p_dir: "data/clips_480p"
+  weights_dir: "weights"
+  out_dir: "out"
+
+models:
+  hand_landmarker: "weights/hand_landmarker.task"
+  confidence_threshold: 0.5
+
