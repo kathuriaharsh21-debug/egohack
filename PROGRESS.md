@@ -134,8 +134,52 @@
   - **Total 4 Full Clips**: 1,196.7s (0.33 hours / ~20 min)
 
 ### Overnight Batch Run (40 Clips on GPU, Resumable)
-- **Start Time**: 2026-11-01 02:15 IST
-- **Estimated Finish Time (ETA)**: 2026-11-01 05:30 IST (~3.25 hours)
+- **Start Time**: 2026-11-01 02:35 IST
+- **Estimated Finish Time (ETA)**: 2026-11-01 05:50 IST (~3.25 hours)
 - **Settings**: step=2, overlay off, output to D:/egohack_data/out, per-scene vocabulary enabled
 - **Progress Log**:
-- [01/40] `MTL-SGF00106-021`: FAILED ('ObjectDetector' object has no attribute 'ignore_classes')
+- [01/40] `MTL-SGF00106-021`: 143.4s (2.39m) | 39.6 FPS | 5400 frames | contact: 0.0%
+- [02/40] `MTL-SGF00106-023`: 159.7s (2.66m) | 34.6 FPS | 5400 frames | contact: 0.1%
+- [03/40] `MTL-SGF00106-027`: 159.3s (2.66m) | 34.7 FPS | 5400 frames | contact: 1.3%
+- [04/40] `MTL-SGF00106-028`: 150.6s (2.51m) | 36.7 FPS | 5400 frames | contact: 0.0%
+- [05/40] `MTL-SGF00106-029`: 151.9s (2.53m) | 36.5 FPS | 5400 frames | contact: 0.2%
+- [06/40] `MTL-SGF00106-031`: 141.7s (2.36m) | 39.0 FPS | 5400 frames | contact: 0.3%
+- [07/40] `MTL-SGF00106-032`: 148.4s (2.47m) | 37.3 FPS | 5400 frames | contact: 0.1%
+- [08/40] `MTL-SGF00106-035`: 159.1s (2.65m) | 34.8 FPS | 5400 frames | contact: 3.1%
+- [09/40] `MTL-SGF00106-036`: 152.9s (2.55m) | 36.2 FPS | 5400 frames | contact: 0.5%
+- [10/40] `MTL-SGF00106-040`: 144.9s (2.42m) | 38.1 FPS | 5400 frames | contact: 0.0%
+- [11/40] `MTL-SKL00089-005`: 184.3s (3.07m) | 30.0 FPS | 5400 frames | contact: 16.0%
+- [12/40] `MTL-SKL00089-006`: 188.0s (3.13m) | 29.4 FPS | 5400 frames | contact: 22.9%
+- [13/40] `MTL-SKL00089-007`: 191.7s (3.20m) | 28.8 FPS | 5400 frames | contact: 27.0%
+- [14/40] `MTL-SKL00089-008`: 190.6s (3.18m) | 29.0 FPS | 5400 frames | contact: 23.8%
+- [15/40] `MTL-SKL00089-011`: 180.9s (3.01m) | 30.6 FPS | 5400 frames | contact: 16.3%
+- [16/40] `MTL-SKL00089-012`: 180.1s (3.00m) | 30.7 FPS | 5400 frames | contact: 18.9%
+- [17/40] `MTL-SKL00089-013`: 179.5s (2.99m) | 30.8 FPS | 5400 frames | contact: 13.6%
+- [18/40] `MTL-SKL00089-014`: 176.2s (2.94m) | 31.4 FPS | 5400 frames | contact: 12.1%
+- [19/40] `MTL-SKL00089-022`: 175.7s (2.93m) | 31.5 FPS | 5400 frames | contact: 6.1%
+- [20/40] `MTL-SKL00089-023`: 181.4s (3.02m) | 30.5 FPS | 5400 frames | contact: 7.4%
+- [21/40] `mytronlabs-000003-002`: 170.5s (2.84m) | 32.5 FPS | 5400 frames | contact: 0.6%
+- [22/40] `mytronlabs-000003-003`: 159.4s (2.66m) | 34.7 FPS | 5400 frames | contact: 1.1%
+- [23/40] `mytronlabs-000003-004`: 145.6s (2.43m) | 38.1 FPS | 5400 frames | contact: 1.3%
+- [24/40] `mytronlabs-000003-005`: 161.3s (2.69m) | 34.3 FPS | 5400 frames | contact: 1.1%
+- [25/40] `mytronlabs-000003-006`: 165.3s (2.76m) | 33.5 FPS | 5400 frames | contact: 0.5%
+- [26/40] `mytronlabs-000003-007`: 164.1s (2.73m) | 33.8 FPS | 5400 frames | contact: 1.2%
+- [27/40] `mytronlabs-000003-008`: 159.4s (2.66m) | 34.8 FPS | 5400 frames | contact: 1.6%
+- [28/40] `mytronlabs-000003-012`: 166.3s (2.77m) | 33.3 FPS | 5400 frames | contact: 1.4%
+- [29/40] `mytronlabs-000003-013`: 172.6s (2.88m) | 32.1 FPS | 5400 frames | contact: 1.0%
+- [30/40] `mytronlabs-000003-015`: 173.0s (2.88m) | 32.0 FPS | 5400 frames | contact: 1.0%
+- [31/40] `mytronlabs-000060-006`: 125.9s (2.10m) | 44.1 FPS | 5400 frames | contact: 4.8%
+- [32/40] `mytronlabs-000060-008`: 126.6s (2.11m) | 43.9 FPS | 5400 frames | contact: 4.8%
+- [33/40] `mytronlabs-000060-009`: 131.9s (2.20m) | 42.1 FPS | 5400 frames | contact: 5.0%
+- [34/40] `mytronlabs-000060-010`: 135.5s (2.26m) | 40.9 FPS | 5400 frames | contact: 13.6%
+- [35/40] `mytronlabs-000060-011`: 127.2s (2.12m) | 43.6 FPS | 5400 frames | contact: 4.5%
+- [36/40] `mytronlabs-000060-012`: 127.4s (2.12m) | 43.5 FPS | 5400 frames | contact: 8.6%
+
+## Phase 5 — Live Auto-Annotator [DONE 04:30 IST 1-Nov-2026]
+- Commit: ed2f1a7
+- Files: live/__init__.py, capture.py, event_log.py, panel_3d.py, overlay.py, app.py, README_live.md
+- live/recordings/ gitignored
+- FPS (hands-only, 300 frames): 30.5 fps (32.8 ms/frame)
+- FPS (hands+YOLO sync, 500 frames): 12.5 fps sustained / 22.5 mean; live app uses ObjectThread so display is not blocked by YOLO
+- Run: python live/app.py --source webcam | --source clip --clip <name>
+- Keys: Q S O 3 R P V
