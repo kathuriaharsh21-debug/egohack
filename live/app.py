@@ -354,6 +354,8 @@ def run(
         if frame is None:
             time.sleep(0.005)
             continue
+        if frame.shape[1] != w_frame or frame.shape[0] != h_frame:
+            frame = cv2.resize(frame, (w_frame, h_frame))
         stage_times["capture"].append((time.perf_counter() - t_c0) * 1000.0)
 
         frame_counter += 1
