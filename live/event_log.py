@@ -63,11 +63,19 @@ class EventLog:
 
     def __init__(self, recordings_dir: str = "live/recordings") -> None:
         os.makedirs(recordings_dir, exist_ok=True)
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        # Delete old recordings from previous runs so each session starts fresh
+        for fname in os.listdir(recordings_dir):
+            fpath = os.path.join(recordings_dir, fname)
+            try:
+                if os.path.isfile(fpath) and (fname.startswith("events") or fname.startswith("live_")):
+                    os.remove(fpath)
+            except Exception:
+                pass
+
         self.recordings_dir = recordings_dir
-        self.csv_path = os.path.join(recordings_dir, f"events_{ts}.csv")
-        self.json_path = os.path.join(recordings_dir, f"events_{ts}.json")
-        self.latest_json_path = os.path.join(recordings_dir, "events_latest.json")
+        self.json_path = os.path.join(recordings_dir, "events.json")
+        self.csv_path = os.path.join(recordings_dir, "events.csv")
+        self.latest_json_path = self.json_path
         self._init_csv()
         self._write_json()
 
