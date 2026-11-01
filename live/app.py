@@ -514,7 +514,14 @@ def run(
         video_writer.release()
     hand_det.close()
     cv2.destroyAllWindows()
-    print(f"[app] Done. Event CSV: {event_log.csv_path}")
+    all_json_events = event_log.finalize_all(ts if 'ts' in locals() else 0.0)
+    print(f"[app] Done. Event CSV:  {event_log.csv_path}")
+    print(f"[app] Done. Event JSON: {event_log.json_path}")
+    if all_json_events:
+        print("\n--- ALL TOUCH EVENTS (JSON FORMAT) ---")
+        import json
+        print(json.dumps(all_json_events, indent=2))
+        print("--------------------------------------\n")
 
 
 # ── CLI entry-point ──────────────────────────────────────────────────────────

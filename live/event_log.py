@@ -9,6 +9,7 @@ Rules:
 """
 
 import csv
+import json
 import os
 import time
 from collections import defaultdict
@@ -40,15 +41,35 @@ class ContactEvent:
         self.confidence = round(raw_conf, 3)
         self.needs_review = self.confidence < LOW_CONF_THRESHOLD
 
+    def to_dict(self) -> dict:
+        t_s = round(float(self.t_start), 3)
+        t_e = round(float(self.t_end if self.t_end is not None else self.t_start), 3)
+        duration = round(max(0.0, t_e - t_s), 3)
+        return {
+            "object_name": self.object_name,
+            "state": self.state,
+            "hand_side": self.side,
+            "hand_id": int(self.hand_id),
+            "t_start": t_s,
+            "t_end": t_e,
+            "duration_sec": duration,
+            "confidence": float(self.confidence),
+            "needs_review": bool(self.needs_review),
+        }
+
 
 class EventLog:
-    """Accumulates contact events and persists them to a CSV file."""
+    """Accumulates contact events and persists them to both CSV and JSON."""
 
     def __init__(self, recordings_dir: str = "live/recordings") -> None:
         os.makedirs(recordings_dir, exist_ok=True)
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.recordings_dir = recordings_dir
         self.csv_path = os.path.join(recordings_dir, f"events_{ts}.csv")
+        self.json_path = os.path.join(recordings_dir, f"events_{ts}.json")
+        self.latest_json_path = os.path.join(recordings_dir, "events_latest.json")
         self._init_csv()
+        self._write_json()
 
         # State per hand_id
         self._active: Dict[int, ContactEvent] = {}
@@ -110,6 +131,13 @@ class EventLog:
     # Internal helpers
     # ------------------------------------------------------------------
 
+    def finalize_all(self, final_ts: float) -> List[dict]:
+        """Close any remaining active events on shutdown and flush JSON/CSV."""
+        for hand_id in list(self._active):
+            self._close_event(hand_id, final_ts)
+        self._write_json()
+        return [ev.to_dict() for ev in self.events]
+
     def _close_event(self, hand_id: int, ts: float) -> None:
         if hand_id not in self._active:
             return
@@ -119,6 +147,9 @@ class EventLog:
         if ev.needs_review:
             self.review_events.append(ev)
         self._write_row(ev)
+        self._write_json()
+        # Print real-time JSON format to console
+        print(f"[TOUCH EVENT JSON] {json.dumps(ev.to_dict())}")
 
     def _init_csv(self) -> None:
         with open(self.csv_path, "w", newline="") as f:
@@ -137,6 +168,16 @@ class EventLog:
                     round(ev.t_start, 3), round(ev.t_end or 0.0, 3),
                     ev.confidence, int(ev.needs_review)
                 ])
+        except Exception:
+            pass
+
+    def _write_json(self) -> None:
+        try:
+            records = [ev.to_dict() for ev in self.events]
+            with open(self.json_path, "w", encoding="utf-8") as f:
+                json.dump(records, f, indent=2)
+            with open(self.latest_json_path, "w", encoding="utf-8") as f:
+                json.dump(records, f, indent=2)
         except Exception:
             pass
 
