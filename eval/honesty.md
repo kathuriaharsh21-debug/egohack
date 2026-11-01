@@ -111,3 +111,4 @@ The auto-annotation pipeline flags low-confidence contact events ($Th=0.85$ tune
 - **Processing Speed**: **35.36 FPS** average pipeline execution on local GPU (RTX 4060 Laptop GPU, step=2).
 - **Event State Machine**: Applied temporal hysteresis (merging gaps $<0.4$s, discarding blips $<0.3$s), condensing 13,862 flickering frame transitions into **1,482 continuous contact events** across all 40 clips.
 - **Cleanliness**: 0 external proprietary weights tracked in Git, 0 API keys leaked, 0 raw frames committed.
+

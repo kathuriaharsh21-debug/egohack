@@ -1,32 +1,42 @@
-# Data & Outputs
-data/
-out/
-weights/
-frames/
-dev_frames/
-eval/labels/
-eval/labels_backup*/
-eval/labels_ai/
-eval/ai_frames/
-eval/montage/
-eval/labels_second/
+# Data & Video Files
 *.mp4
 *.avi
+*.mov
+*.mkv
 *.png
 *.jpg
 *.jpeg
+*.jsonl
+*.zip
+*.pkl
 
-# Model weights & caches
+# Directories with datasets, frames, or outputs
+data/
+out/
+eval/labels*/
+eval/ai_frames/
+eval/montage/
+eval/check_*
+kaggle_upload/
+weights/
+mano/
+live/recordings/
+scratch/
+.kaggle/
+.kaggle
+
+# Models & Weights
 *.pt
 *.pth
-*.onnx
 *.task
+*.onnx
 
-# Credentials & environment
+# Credentials & Environment
 kaggle.json
+*.env
 .env
 
-# Virtual environment & python caches
+# Virtual Environment & Python Caches
 egohack/
 .venv/
 venv/
@@ -37,8 +47,3 @@ __pycache__/
 dist/
 build/
 .pytest_cache/
-
-live/recordings/
-*.avi
-
-scratch/

@@ -230,11 +230,9 @@ def draw_event_panel(
 ) -> None:
     """Draw the GRAB/RELEASE event log on the right side of the frame."""
     h, w = frame.shape[:2]
-    # Dark background strip
+    # Dark background strip directly filled (fast in-place, zero copy)
     x0 = w - panel_w
-    overlay = frame.copy()
-    cv2.rectangle(overlay, (x0, 0), (w, h), (10, 10, 10), -1)
-    cv2.addWeighted(overlay, 0.6, frame, 0.4, 0, frame)
+    cv2.rectangle(frame, (x0, 0), (w, h), (25, 25, 25), -1)
 
     title = "Event Log"
     cv2.putText(frame, title, (x0 + 6, 16),

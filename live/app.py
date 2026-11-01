@@ -145,6 +145,7 @@ def run(
     max_seconds: Optional[float] = None,
     start_objects_on: bool = True,
     headless: bool = False,
+    old_overlay: bool = False,
 ) -> None:
     """Entry-point for the live demo."""
     config = load_config(config_path)
@@ -253,6 +254,16 @@ def run(
     obj_ms       = 0.0
     contact_ms   = 0.0
 
+    stage_times = {
+        "capture": [],
+        "hands": [],
+        "objects": [],
+        "contact": [],
+        "overlay": [],
+        "panel_3d": [],
+        "display": [],
+    }
+
     last_objects: List[ObjectDetection] = []
     last_frame_contacts = FrameContacts(frame=0, t=0.0, contacts=[])
     last_frame_hands    = FrameHands(frame=0, t=0.0, hands=[])
@@ -265,12 +276,18 @@ def run(
 
     print("[app] Running. Press Q to quit.")
 
+    canvas = np.zeros((h_frame, w_frame + EVENT_PANEL_W, 3), dtype=np.uint8)
+
     while True:
         # Check max-seconds timeout for automated benchmark/tests
         elapsed_sec = time.perf_counter() - start_app_t
         if max_seconds is not None and elapsed_sec >= max_seconds:
             mean_fps = frame_counter / max(1e-3, elapsed_sec)
-            print(f"[BENCHMARK] Elapsed: {elapsed_sec:.2f}s | Frames: {frame_counter} | Mean FPS: {mean_fps:.2f} | objects_on={objects_on}")
+            print(f"[BENCHMARK] Elapsed: {elapsed_sec:.2f}s | Frames: {frame_counter} | Mean FPS: {mean_fps:.2f} | objects_on={objects_on} | old_overlay={old_overlay}")
+            print("  Stage breakdown (mean ms/frame):")
+            for stage, vals in stage_times.items():
+                m = sum(vals) / max(1, len(vals))
+                print(f"    {stage:10s}: {m:6.2f} ms")
             break
 
         # ── Keyboard ──────────────────────────────────────────────────────
@@ -322,26 +339,35 @@ def run(
             continue
 
         # ── Grab newest frame ──────────────────────────────────────────────
+        t_c0 = time.perf_counter()
         frame, fidx, ts = cap.get_latest_frame()
         if frame is None:
             time.sleep(0.005)
             continue
+        stage_times["capture"].append((time.perf_counter() - t_c0) * 1000.0)
 
         frame_counter += 1
 
-        # ── Hand detection (every frame) ────────────────────────────────
-        t0 = time.perf_counter()
+        # ── Hand detection (smooth 1-Euro tracking with step=3) ────────────
+        t_h0 = time.perf_counter()
         try:
-            last_frame_hands = hand_det.process_frame(
-                frame_bgr=frame,
-                frame_idx=fidx,
-                timestamp_sec=ts,
-                width=w_frame,
-                height=h_frame,
-            )
+            if frame_counter % 3 == 0:
+                last_frame_hands = hand_det.process_frame(
+                    frame_bgr=frame,
+                    frame_idx=fidx,
+                    timestamp_sec=ts,
+                    width=w_frame,
+                    height=h_frame,
+                )
+            else:
+                last_frame_hands = hand_det.process_skipped_frame(
+                    frame_idx=fidx,
+                    timestamp_sec=ts,
+                )
         except Exception as e:
             print(f"[app] Hand detect error: {e}")
-        hand_ms = (time.perf_counter() - t0) * 1000.0
+        hand_ms = (time.perf_counter() - t_h0) * 1000.0
+        stage_times["hands"].append(hand_ms)
 
         # Wearer hand bboxes for object second-pass
         wearer_bboxes = [
@@ -350,6 +376,7 @@ def run(
         ]
 
         # ── Object detection (every 3rd frame via thread) ───────────────
+        t_o0 = time.perf_counter()
         if objects_on and obj_thread and frame_counter % 3 == 0:
             obj_thread.submit(frame, wearer_bboxes)
 
@@ -358,9 +385,10 @@ def run(
         else:
             last_objects = []
             obj_ms = 0.0
+        stage_times["objects"].append((time.perf_counter() - t_o0) * 1000.0)
 
         # ── Contact estimation ──────────────────────────────────────────
-        t0 = time.perf_counter()
+        t_ct0 = time.perf_counter()
         try:
             wearer_hands = [h for h in last_frame_hands.hands if h.visible and h.is_wearer]
             last_frame_contacts = contact_est.process_frame(
@@ -372,7 +400,8 @@ def run(
             event_log.update(last_frame_contacts)
         except Exception as e:
             print(f"[app] Contact error: {e}")
-        contact_ms = (time.perf_counter() - t0) * 1000.0
+        contact_ms = (time.perf_counter() - t_ct0) * 1000.0
+        stage_times["contact"].append(contact_ms)
 
         # ── FPS ─────────────────────────────────────────────────────────
         now = time.perf_counter()
@@ -381,15 +410,18 @@ def run(
         prev_t = now
 
         # ── Draw ─────────────────────────────────────────────────────────
+        t_ov0 = time.perf_counter()
         display = frame.copy()
 
         # Check review criteria (threshold 0.85 or predicted hand)
-        has_pred_hand = any(not h.visible for h in last_frame_hands.hands)
-        has_low_conf_contact = any(
-            c.state != "none" and getattr(c, "confidence", 1.0) < 0.85
-            for c in last_frame_contacts.contacts
-        )
-        cur_needs_review = has_pred_hand or has_low_conf_contact
+        cur_needs_review = False
+        if not old_overlay:
+            has_pred_hand = any(not h.visible for h in last_frame_hands.hands)
+            has_low_conf_contact = any(
+                c.state != "none" and getattr(c, "confidence", 1.0) < 0.85
+                for c in last_frame_contacts.contacts
+            )
+            cur_needs_review = has_pred_hand or has_low_conf_contact
 
         ov.draw_hands(display, last_frame_hands)
         if objects_on:
@@ -405,19 +437,18 @@ def run(
         )
         ov.draw_key_hints(display)
 
-        # ── Event panel (right strip) ────────────────────────────────────
-        # Expand canvas
-        canvas = np.zeros((h_frame, w_frame + EVENT_PANEL_W, 3), dtype=np.uint8)
+        # Expand canvas (reusing pre-allocated buffer)
         canvas[:, :w_frame] = display
-        panel_slice = canvas[:, w_frame:]
         ov.draw_event_panel(
             canvas,
             event_log.get_display_events(),
             event_log.get_review_events(),
             panel_w=EVENT_PANEL_W,
         )
+        stage_times["overlay"].append((time.perf_counter() - t_ov0) * 1000.0)
 
         # ── 3D panel inset ────────────────────────────────────────────────
+        t_3d0 = time.perf_counter()
         if show_3d:
             rotation_deg = (rotation_deg + 0.5) % 360.0
             vis_hands = [h for h in last_frame_hands.hands if h.visible and h.kp3d]
@@ -434,10 +465,14 @@ def run(
                 roi = canvas[y1:h_frame, 0:x2]
                 cv2.addWeighted(panel_img, alpha, roi, 1 - alpha, 0, roi)
                 canvas[y1:h_frame, 0:x2] = roi
+        stage_times["panel_3d"].append((time.perf_counter() - t_3d0) * 1000.0)
 
+        # ── Display ───────────────────────────────────────────────────────
+        t_disp0 = time.perf_counter()
         _last_display = canvas
         if not headless:
             cv2.imshow("Live Auto-Annotator", canvas)
+        stage_times["display"].append((time.perf_counter() - t_disp0) * 1000.0)
 
         if recording and video_writer:
             try:
@@ -473,6 +508,8 @@ if __name__ == "__main__":
                         help="Start with object detector toggled off")
     parser.add_argument("--headless", action="store_true",
                         help="Run without displaying OpenCV window (for benchmarking)")
+    parser.add_argument("--old-overlay", action="store_true",
+                        help="Run with previous overlay mode (no NEEDS REVIEW badge or extra text)")
     args = parser.parse_args()
 
     if args.source == "clip" and not args.clip:
@@ -485,5 +522,6 @@ if __name__ == "__main__":
         max_seconds=args.max_seconds,
         start_objects_on=not args.no_objects,
         headless=args.headless,
+        old_overlay=args.old_overlay,
     )
 

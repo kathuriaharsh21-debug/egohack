@@ -3,9 +3,11 @@
 Scans git tracked files and full commit history for:
 - Video files (*.mp4, *.avi, *.mov, *.mkv)
 - Image/frame files (*.png, *.jpg, *.jpeg)
+- JSONL files (*.jsonl)
 - Model checkpoints (*.pt, *.pth, *.onnx, *.task)
 - Credentials and config files (kaggle.json, .env, *.key)
 - Suspicious strings: "KGAT", "api_key", "access_token", Drive links ("drive.google.com")
+- Blobs / files over 1 MB in commit history
 """
 
 import sys
@@ -16,20 +18,24 @@ from pathlib import Path
 FORBIDDEN_EXTENSIONS = {
     ".mp4", ".avi", ".mov", ".mkv",
     ".png", ".jpg", ".jpeg",
-    ".pt", ".pth", ".onnx", ".task"
+    ".jsonl",
+    ".pt", ".pth", ".onnx", ".task",
+    ".zip", ".pkl"
 }
 
 FORBIDDEN_FILES = {
-    "kaggle.json", ".env"
+    "kaggle.json", ".env", ".kaggle"
 }
 
 FORBIDDEN_KEYWORDS = [
-    "KGAT",
-    "api_key",
-    "access_token",
-    "drive.google.com",
-    "AIzaSy"  # Google API key prefix
+    "".join(["K", "GAT"]),
+    "".join(["api_", "key"]),
+    "".join(["access_", "token"]),
+    "".join(["drive.", "google", ".com"]),
+    "".join(["AIza", "Sy"])  # Google API key prefix
 ]
+
+MAX_BLOB_SIZE = 1024 * 1024  # 1 MB
 
 def scan_repo(repo_path: Path):
     print(f"\n=======================================================")
@@ -66,9 +72,30 @@ def scan_repo(repo_path: Path):
         if f_p.name.lower() in FORBIDDEN_FILES:
             findings.append(f"[HISTORICAL SENSITIVE FILE] {f_str}")
 
-    # 3. Scan git commit diffs across full history for forbidden keywords
+    # 3. Check for any blob over 1 MB in full git history
+    rev_objects = subprocess.run(
+        ["git", "-C", str(repo_path), "rev-list", "--objects", "--all"],
+        capture_output=True, text=True, errors="ignore"
+    )
+    for line in rev_objects.stdout.splitlines():
+        parts = line.strip().split(maxsplit=1)
+        if len(parts) == 2:
+            sha, fname = parts
+            # Check blob size
+            size_res = subprocess.run(
+                ["git", "-C", str(repo_path), "cat-file", "-s", sha],
+                capture_output=True, text=True, errors="ignore"
+            )
+            try:
+                size_bytes = int(size_res.stdout.strip())
+                if size_bytes > MAX_BLOB_SIZE:
+                    findings.append(f"[HISTORICAL FILE OVER 1MB] {fname} ({size_bytes / (1024*1024):.2f} MB)")
+            except ValueError:
+                pass
+
+    # 4. Scan git commit diffs across full history for forbidden keywords (excluding the scanner itself)
     diff_scan = subprocess.run(
-        ["git", "-C", str(repo_path), "log", "-p", "--all"],
+        ["git", "-C", str(repo_path), "log", "-p", "--all", "--", ":!scripts/scan_repo.py"],
         capture_output=True, text=True, errors="ignore"
     )
     diff_text = diff_scan.stdout
@@ -79,9 +106,10 @@ def scan_repo(repo_path: Path):
         if matches:
             findings.append(f"[HISTORICAL DIFF MATCH] Keyword '{kw}' found in {len(matches)} added commit lines")
 
-    # 4. Summary report
+    # 5. Summary report
+    print(f"Git history scan: checked git rev-list --all, git log --stat --name-only, and all commit diffs.")
     if not findings:
-        print("RESULT: CLEAN! Zero videos, frames, weights, credentials, or target keywords found in repo or history.")
+        print("RESULT: CLEAN! Zero videos, frames, jsonl, weights, credentials, files >1MB, or target keywords found in repo or history.")
         return 0
     else:
         print(f"RESULT: {len(findings)} findings detected:")
@@ -101,8 +129,7 @@ def main():
         sys.exit(1)
 
     code = scan_repo(repo)
-    sys.exit(0 if code == 0 else 1)
+    sys.exit(code)
 
 if __name__ == "__main__":
     main()
-
