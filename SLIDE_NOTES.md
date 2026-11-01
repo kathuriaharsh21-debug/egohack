@@ -33,7 +33,7 @@
   - Stage B (Objects on GPU): 40/40 clips completed.
   - Stage C (Contacts with 2-frame debounce): 40/40 clips completed.
 - **Throughput & Speed**:
-  - Full pipeline runs at **35.36 FPS** on an NVIDIA RTX 3050 Laptop GPU (4 GB VRAM) — well above real-time 30 FPS playback.
+  - Throughput: hands about 30 FPS in the batch, objects on GPU 13 to 28 FPS end to end by clip, live app: see measurement (23.7 FPS objects off, 23.2 FPS objects on).
   - MediaPipe runs on CPU threads; YOLO-World runs on GPU, keeping latency balanced.
 - **Alignment & Integrity**:
   - Matched each labeled frame to nearest processed frame within $\pm 1$ frame.
