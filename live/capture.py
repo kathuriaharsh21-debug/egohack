@@ -102,6 +102,9 @@ class CaptureThread:
             backend = cv2.CAP_DSHOW if os.name == "nt" else cv2.CAP_ANY
             cap = cv2.VideoCapture(self.webcam_index, backend)
             if cap.isOpened():
+                # Request 16:9 wide-angle to prevent unnatural sensor cropping/zoom
+                cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+                cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
                 self.width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
                 self.height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
                 self.fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
