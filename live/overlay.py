@@ -113,33 +113,38 @@ def draw_objects(
     objects: List[ObjectDetection],
     fixed_classes: Optional[set] = None,
     frame_hands: Optional[FrameHands] = None,
-    proximity_px: int = 50,
+    contact_tolerance_px: int = 8,
 ) -> None:
-    """Draw detected object bounding boxes only when near or touching hands."""
+    """Draw detected object bounding boxes ONLY when fingertips are touching the object."""
     fixed_classes = fixed_classes or set()
 
-    # Extract all active hand points (wrist + 5 fingertips)
-    hand_pts = []
+    # Extract ONLY the 5 active fingertips (Thumb: 4, Index: 8, Middle: 12, Ring: 16, Pinky: 20)
+    fingertip_pts = []
     if frame_hands:
         for h in frame_hands.hands:
             if h.visible and h.kp2d:
-                for idx in [0, 4, 8, 12, 16, 20]:
+                for idx in [4, 8, 12, 16, 20]:
                     if idx < len(h.kp2d):
-                        hand_pts.append(h.kp2d[idx])
+                        fingertip_pts.append(h.kp2d[idx])
+
+    # If no fingertips are detected in the frame, draw zero objects
+    if not fingertip_pts:
+        return
 
     for obj in objects:
         b = obj.bbox
         x1, y1, x2, y2 = int(b[0]), int(b[1]), int(b[2]), int(b[3])
 
-        # If hands are present, only draw objects within proximity of fingertips
-        if hand_pts:
-            is_near = False
-            for px, py in hand_pts:
-                if (x1 - proximity_px) <= px <= (x2 + proximity_px) and (y1 - proximity_px) <= py <= (y2 + proximity_px):
-                    is_near = True
-                    break
-            if not is_near:
-                continue
+        # Strict touch check: at least one fingertip MUST penetrate the object box
+        is_touching = False
+        for px, py in fingertip_pts:
+            if (x1 - contact_tolerance_px) <= px <= (x2 + contact_tolerance_px) and \
+               (y1 - contact_tolerance_px) <= py <= (y2 + contact_tolerance_px):
+                is_touching = True
+                break
+
+        if not is_touching:
+            continue
 
         is_fixed = obj.label.lower() in fixed_classes
         col = COL_FIXED_OBJ if is_fixed else COL_OBJECT
