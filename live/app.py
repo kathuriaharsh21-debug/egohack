@@ -295,10 +295,15 @@ def run(
                 print(f"    {stage:10s}: {m:6.2f} ms")
             break
 
-        # ── Keyboard ──────────────────────────────────────────────────────
+        # ── Keyboard & Window Close ────────────────────────────────────────
         key = 255
         if not headless:
             key = cv2.waitKey(1) & 0xFF
+            try:
+                if cv2.getWindowProperty("Live Auto-Annotator", cv2.WND_PROP_VISIBLE) < 1:
+                    break
+            except Exception:
+                pass
         if key == ord('q'):
             break
         elif key == ord('s'):

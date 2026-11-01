@@ -122,6 +122,7 @@ class CaptureThread:
     def _run(self) -> None:
         """Main loop — runs on the daemon thread."""
         while not self._stop_event.is_set():
+            t_loop_start = time.perf_counter()
             ret, frame = self._cap.read()
             if not ret:
                 if self.source == "clip":
@@ -136,4 +137,12 @@ class CaptureThread:
             with self._lock:
                 self._buf.append((frame, self._frame_idx, ts))
             self._frame_idx += 1
+
+            if self.source == "clip":
+                # Pace file playback to normal video speed (30 FPS)
+                target_dt = 1.0 / max(1.0, self.fps)
+                elapsed = time.perf_counter() - t_loop_start
+                sleep_t = target_dt - elapsed
+                if sleep_t > 0.001:
+                    time.sleep(sleep_t)
 
