@@ -450,7 +450,7 @@ def run(
 
         ov.draw_hands(display, last_frame_hands)
         if objects_on:
-            ov.draw_objects(display, last_objects, fixed_classes=fixed_classes)
+            ov.draw_objects(display, last_objects, fixed_classes=fixed_classes, frame_hands=last_frame_hands)
         ov.draw_contacts(display, last_frame_contacts, last_frame_hands, last_objects)
         ov.draw_hud(
             display, fps=fps_smooth,

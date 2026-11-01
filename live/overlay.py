@@ -112,12 +112,35 @@ def draw_objects(
     frame: np.ndarray,
     objects: List[ObjectDetection],
     fixed_classes: Optional[set] = None,
+    frame_hands: Optional[FrameHands] = None,
+    proximity_px: int = 50,
 ) -> None:
-    """Draw detected object bounding boxes."""
+    """Draw detected object bounding boxes only when near or touching hands."""
     fixed_classes = fixed_classes or set()
+
+    # Extract all active hand points (wrist + 5 fingertips)
+    hand_pts = []
+    if frame_hands:
+        for h in frame_hands.hands:
+            if h.visible and h.kp2d:
+                for idx in [0, 4, 8, 12, 16, 20]:
+                    if idx < len(h.kp2d):
+                        hand_pts.append(h.kp2d[idx])
+
     for obj in objects:
         b = obj.bbox
         x1, y1, x2, y2 = int(b[0]), int(b[1]), int(b[2]), int(b[3])
+
+        # If hands are present, only draw objects within proximity of fingertips
+        if hand_pts:
+            is_near = False
+            for px, py in hand_pts:
+                if (x1 - proximity_px) <= px <= (x2 + proximity_px) and (y1 - proximity_px) <= py <= (y2 + proximity_px):
+                    is_near = True
+                    break
+            if not is_near:
+                continue
+
         is_fixed = obj.label.lower() in fixed_classes
         col = COL_FIXED_OBJ if is_fixed else COL_OBJECT
         cv2.rectangle(frame, (x1, y1), (x2, y2), col, 2)
