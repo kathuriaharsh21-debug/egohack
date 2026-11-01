@@ -37,8 +37,8 @@ def load_config() -> dict:
 
 
 def resolve_clip_path(clip_arg: str, config: dict) -> Path:
-    clips_dir = Path(config.get("data", {}).get("clips_480p_dir", "data/clips_480p"))
-    raw_dir = Path(config.get("data", {}).get("clips_dir", "data/clips"))
+    clips_dir = Path(config.get("data", {}).get("clips_dir", "data/clips"))
+    raw_dir = Path(config.get("data", {}).get("raw_dir", "data/raw"))
 
     stem = Path(clip_arg).stem
     candidates = [
@@ -46,6 +46,11 @@ def resolve_clip_path(clip_arg: str, config: dict) -> Path:
         raw_dir / f"{stem}.mp4",
         Path(clip_arg),
     ]
+    dev_base = Path("C:/egohack_data")
+    if dev_base.exists():
+        for d in dev_base.iterdir():
+            if d.is_dir() and "clip" in d.name:
+                candidates.append(d / f"{stem}.mp4")
 
     # Handle common alias: 000060-006 <-> 000060-008
     if "000060-006" in stem:
@@ -401,7 +406,12 @@ def main():
     out_root.mkdir(parents=True, exist_ok=True)
 
     if args.all:
-        clips_dir = Path(config.get("data", {}).get("clips_480p_dir", "data/clips_480p"))
+        clips_dir = Path(config.get("data", {}).get("clips_dir", "data/clips"))
+        if not clips_dir.exists() and Path("C:/egohack_data").exists():
+            for d in Path("C:/egohack_data").iterdir():
+                if d.is_dir() and "clip" in d.name:
+                    clips_dir = d
+                    break
         clips = sorted(list(clips_dir.glob("*.mp4")))
         if not clips:
             print(f"No clips found in {clips_dir}")
@@ -441,3 +451,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

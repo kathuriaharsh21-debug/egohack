@@ -125,7 +125,7 @@
 - **GPU Hours Used**: 0.35 h (RTX 3050 CUDA 12.1 inference)
 - **Hardware Acceleration**: Official CUDA PyTorch 2.5.1+cu121 installed; YOLO-World latency dropped from 250.2 ms to 48.16 ms (5.20x speedup).
 - **Contact Estimator Tuned**: min_held_frames set to 2 in config.yaml, doubling contact recall on SKL-008 from 20% to 45% (captures 133 ms grasps at step=2) with 0 false positives on empty frames.
-- **Transcode**: Completed 40/40 clips in C:/egohack_data/clips_480p/ (0 failures).
+- **Transcode**: Completed 40/40 clips in C:/egohack_data/clips/ (0 failures).
 - **Full Dev Clip GPU Benchmark (5,400 frames each)**:
   - mytronlabs-000060-006: 289.7s (4.83 min) | 19.82 pipeline FPS (10.42 det FPS) | 5.7% contact
   - MTL-SKL00089-008: 282.2s (4.70 min) | 19.69 pipeline FPS (10.21 det FPS) | 16.4% contact

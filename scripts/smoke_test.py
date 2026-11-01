@@ -52,7 +52,7 @@ def test_mediapipe_10_frames():
     if not model_path.exists():
         raise FileNotFoundError(f"Model not found at {model_path}")
 
-    clip_path = Path("data/clips_480p/MTL-SGF00106-036.mp4")
+    clip_path = Path("data/clips/MTL-SGF00106-036.mp4")
     if not clip_path.exists():
         raise FileNotFoundError(f"Clip not found at {clip_path}")
 
@@ -107,4 +107,5 @@ def test_mediapipe_10_frames():
 if __name__ == "__main__":
     test_imports()
     test_mediapipe_10_frames()
+
 

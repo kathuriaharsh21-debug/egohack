@@ -7,8 +7,8 @@ import datetime
 from run_pipeline import run_clip_pipeline, load_config
 
 config = load_config()
-clips_dir = Path(config.get("data", {}).get("clips_480p_dir", "C:/egohack_data/clips_480p"))
-out_root = Path(config.get("data", {}).get("out_dir", "D:/egohack_data/out"))
+clips_dir = Path(config.get("data", {}).get("clips_dir", "data/clips"))
+out_root = Path(config.get("data", {}).get("out_dir", "out"))
 out_root.mkdir(parents=True, exist_ok=True)
 
 clips = sorted(list(clips_dir.glob("*.mp4")))
@@ -56,4 +56,5 @@ for idx, clip_path in enumerate(clips, 1):
 
 total_dur = time.perf_counter() - start_time
 print(f"\nALL 40 CLIPS COMPLETED IN {total_dur/3600:.2f} hours ({total_dur:.1f}s)")
+
 

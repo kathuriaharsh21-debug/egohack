@@ -6,7 +6,7 @@ import cv2
 def extract_frames():
     out_dir = Path("dev_frames")
     out_dir.mkdir(parents=True, exist_ok=True)
-    clips = list(Path("data/clips_480p").glob("*.mp4"))
+    clips = list(Path("data/clips").glob("*.mp4"))
 
     for clip in clips:
         cap = cv2.VideoCapture(str(clip))
@@ -23,4 +23,5 @@ def extract_frames():
 
 if __name__ == "__main__":
     extract_frames()
+
 

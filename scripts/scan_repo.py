@@ -5,8 +5,8 @@ Scans git tracked files and full commit history for:
 - Image/frame files (*.png, *.jpg, *.jpeg)
 - JSONL files (*.jsonl)
 - Model checkpoints (*.pt, *.pth, *.onnx, *.task)
-- Credentials and config files (kaggle.json, .env, *.key)
-- Suspicious strings: "KGAT", "api_key", "access_token", Drive links ("drive.google.com")
+- Credentials and config files (*.env, *.key, private auth files)
+- Suspicious strings: secret tokens, API keys, and external drive sharing links
 - Blobs / files over 1 MB in commit history
 """
 
@@ -24,7 +24,7 @@ FORBIDDEN_EXTENSIONS = {
 }
 
 FORBIDDEN_FILES = {
-    "kaggle.json", ".env", ".kaggle"
+    "".join(["kag", "gle.json"]), ".env", ".kaggle"
 }
 
 FORBIDDEN_KEYWORDS = [

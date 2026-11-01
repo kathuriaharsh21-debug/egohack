@@ -9,10 +9,9 @@ dev_clips:
   - mytronlabs-000060-008
 
 data:
-  clips_dir: "D:/egohack_data/all_clips"
-  clips_480p_dir: "C:/egohack_data/clips_480p"
+  clips_dir: "data/clips"
   weights_dir: "weights"
-  out_dir: "D:/egohack_data/out"
+  out_dir: "out"
 
 models:
   hand_landmarker: "weights/hand_landmarker.task"

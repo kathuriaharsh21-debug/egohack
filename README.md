@@ -40,12 +40,12 @@ python run_pipeline.py --all --excerpt 20
 Input videos and output targets are configured centrally in `config.yaml`:
 ```yaml
 data:
-  clips_dir: "D:/egohack_data/all_clips"          # External full-res clips
-  clips_480p_dir: "C:/egohack_data/clips_480p"    # 480p transcoded clips
+  clips_dir: "data/clips"                        # Clip directory
+  raw_dir: "data/raw"                            # Optional raw source
   weights_dir: "weights"                          # Model weights
-  out_dir: "D:/egohack_data/out"                  # Output directory
+  out_dir: "out"                  # Output directory
 ```
-To run on clips located on an external drive or folder, update `clips_480p_dir` or `clips_dir` in `config.yaml`. Completed stages automatically cache to avoid redundant execution.
+To run on clips located on an external drive or folder, update `clips_dir` in `config.yaml`. Completed stages automatically cache to avoid redundant execution.
 
 ---
 
@@ -82,7 +82,7 @@ Pipeline stages execute deterministically with fixed random seeds:
 2. **Stage B (Objects)**: YOLO-World v2 with per-scene vocabulary (`SKL`, `000003`, `000060`, `SGF`) and domain ignore list (`water bottle`, `gloves`, `shelf`, `floor box`).
 3. **Stage C (Contacts)**: Geometric finger-to-box closure, palm expansion, and 2-frame temporal debounce.
 
-Outputs per clip are structured under `D:/egohack_data/out/<clip_name>/` (or local `out/`):
+Outputs per clip are structured under `out/<clip_name>/` (or local `out/`):
 - `hands.jsonl`: per-frame keypoints, boxes, sides, visibility, and interpolation flags.
 - `objects.jsonl`: per-frame detected objects and confidence scores.
 - `contacts_frames.jsonl`: per-frame hand contact states and target object IDs.

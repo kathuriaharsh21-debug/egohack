@@ -78,7 +78,12 @@ def load_config(config_path: str = "config.yaml") -> dict:
 
 
 def resolve_clip_path(clip_name: str, config: dict) -> str:
-    clips_dir = Path(config.get("data", {}).get("clips_480p_dir", "C:/egohack_data/clips_480p"))
+    clips_dir = Path(config.get("data", {}).get("clips_dir", "data/clips"))
+    if not clips_dir.exists() and Path("C:/egohack_data").exists():
+        for d in Path("C:/egohack_data").iterdir():
+            if d.is_dir() and "clip" in d.name:
+                clips_dir = d
+                break
     # Try exact match first, then glob
     for ext in (".mp4", ".avi", ".mkv"):
         p = clips_dir / (clip_name + ext)
@@ -524,4 +529,5 @@ if __name__ == "__main__":
         headless=args.headless,
         old_overlay=args.old_overlay,
     )
+
 

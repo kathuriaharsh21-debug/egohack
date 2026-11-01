@@ -97,7 +97,7 @@ def convert_to_480p(src_path: Path, dst_path: Path):
 
 def main():
     clips_dir = Path("data/clips")
-    clips_480p_dir = Path("data/clips_480p")
+    clips_dir = Path("data/clips")
     meta_dir = Path("meta")
     meta_dir.mkdir(parents=True, exist_ok=True)
 
@@ -110,7 +110,7 @@ def main():
 
     # Convert all raw clips to 480p if not present
     for clip in raw_clips:
-        dst = clips_480p_dir / clip.name
+        dst = clips_dir / clip.name
         convert_to_480p(clip, dst)
 
     # Collect inventory
@@ -120,9 +120,9 @@ def main():
         info["folder"] = "clips"
         rows.append(info)
 
-    for clip in sorted(list(clips_480p_dir.glob("*.mp4"))):
+    for clip in sorted(list(clips_dir.glob("*.mp4"))):
         info = get_clip_metadata(clip)
-        info["folder"] = "clips_480p"
+        info["folder"] = "clips"
         rows.append(info)
 
     df = pd.DataFrame(rows)
@@ -135,4 +135,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 

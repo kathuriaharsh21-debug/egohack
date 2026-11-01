@@ -35,7 +35,7 @@ scratch/
 *.onnx
 
 # Credentials & Environment
-kaggle.json
+*kaggle*
 *.env
 .env
 

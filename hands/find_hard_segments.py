@@ -16,8 +16,8 @@ import numpy as np
 
 
 def analyze_clip_segments(clip_name: str, max_seconds: float = 20.0) -> List[Dict[str, Any]]:
-    p1 = Path("C:/egohack_data/clips_480p") / f"{clip_name}.mp4"
-    clip_path = p1 if p1.exists() else Path("data/clips_480p") / f"{clip_name}.mp4"
+    p1 = Path("data/clips") / f"{clip_name}.mp4"
+    clip_path = p1 if p1.exists() else Path("data/clips") / f"{clip_name}.mp4"
     jsonl_path = Path("out") / clip_name / "hands.jsonl"
 
     if not clip_path.exists() or not jsonl_path.exists():
@@ -209,4 +209,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 

@@ -49,10 +49,10 @@ DEV_CLIPS = [
 
 
 def get_clip_480p_path(clip_name: str) -> Path:
-    p1 = Path("C:/egohack_data/clips_480p") / f"{clip_name}.mp4"
+    p1 = Path("data/clips") / f"{clip_name}.mp4"
     if p1.exists():
         return p1
-    return Path("data/clips_480p") / f"{clip_name}.mp4"
+    return Path("data/clips") / f"{clip_name}.mp4"
 
 
 @st.cache_data
@@ -879,3 +879,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

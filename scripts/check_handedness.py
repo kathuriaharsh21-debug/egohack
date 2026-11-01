@@ -24,7 +24,7 @@ def check_handedness():
     detector = vision.HandLandmarker.create_from_options(options)
 
     # Let's inspect MTL-SGF00106-036 frames 140 to 170
-    clip_path = Path("data/clips_480p/MTL-SGF00106-036.mp4")
+    clip_path = Path("data/clips/MTL-SGF00106-036.mp4")
     cap = cv2.VideoCapture(str(clip_path))
     
     print(f"Testing handedness on {clip_path.name} (carpentry clip)...")
@@ -57,4 +57,5 @@ def check_handedness():
 
 if __name__ == "__main__":
     check_handedness()
+
 

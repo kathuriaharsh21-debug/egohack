@@ -1,4 +1,4 @@
-"""Transcode all clips in C:/egohack_data/all_clips to 480p with NVENC into C:/egohack_data/clips_480p.
+"""Transcode all clips in data/raw to 480p with NVENC into data/clips.
 
 Resumable: Skips already transcoded, valid clips. Uses .tmp files during encoding.
 """
@@ -7,8 +7,8 @@ import subprocess
 import time
 from pathlib import Path
 
-SRC_DIR = Path("C:/egohack_data/all_clips")
-DST_DIR = Path("C:/egohack_data/clips_480p")
+SRC_DIR = Path("data/raw")
+DST_DIR = Path("data/clips")
 DST_DIR.mkdir(parents=True, exist_ok=True)
 
 clips = sorted(list(SRC_DIR.glob("*.mp4")))
@@ -87,4 +87,5 @@ dst_clips = list(DST_DIR.glob("*.mp4"))
 print(f"\nCompleted in {total_time:.1f}s:")
 print(f"  Total target clips in {DST_DIR}: {len(dst_clips)} / {len(clips)}")
 print(f"  Transcoded: {transcoded_count}, Skipped (already existed): {skipped_count}, Failed: {failed_count}")
+
 

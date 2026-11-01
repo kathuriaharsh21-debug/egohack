@@ -177,8 +177,8 @@ def run_stage_b_clip(clip_path: Path, out_dir: Path, config: dict, step: int = 2
 
 def main():
     config = load_config()
-    clips_dir = Path(config.get("data", {}).get("clips_480p_dir", "C:/egohack_data/clips_480p"))
-    out_dir = Path(config.get("data", {}).get("out_dir", "D:/egohack_data/out"))
+    clips_dir = Path(config.get("data", {}).get("clips_dir", "data/clips"))
+    out_dir = Path(config.get("data", {}).get("out_dir", "out"))
     out_dir.mkdir(parents=True, exist_ok=True)
     progress_file = Path("PROGRESS.md")
 
@@ -263,4 +263,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 

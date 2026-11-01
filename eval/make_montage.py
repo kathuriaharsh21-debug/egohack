@@ -13,7 +13,7 @@ import cv2
 import numpy as np
 
 AI_FRAMES_DIR = Path("eval/ai_frames")
-CLIPS_DIR = Path("C:/egohack_data/clips_480p") if Path("C:/egohack_data/clips_480p").exists() else Path("data/clips_480p")
+CLIPS_DIR = Path("data/clips") if Path("data/clips").exists() else Path("data/clips")
 MONTAGE_DIR = Path("eval/montage")
 
 DEV_CLIPS = [
@@ -197,4 +197,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 

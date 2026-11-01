@@ -52,8 +52,8 @@ def make_demo(
     clip_name: str = "mytronlabs-000060-006",
     duration_sec: float = 120.0,
     out_dir: Path = Path("D:/egohack_data/demo"),
-    clips_dir: Path = Path("C:/egohack_data/clips_480p"),
-    pipeline_out: Path = Path("D:/egohack_data/out")
+    clips_dir: Path = Path("data/clips"),
+    pipeline_out: Path = Path("out")
 ):
     out_dir.mkdir(parents=True, exist_ok=True)
     out_mp4 = out_dir / "egohack_demo_2min.mp4"
@@ -177,3 +177,4 @@ def make_demo(
 
 if __name__ == "__main__":
     make_demo()
+
