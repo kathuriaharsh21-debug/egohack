@@ -82,13 +82,15 @@ Pipeline stages execute deterministically with fixed random seeds:
 2. **Stage B (Objects)**: YOLO-World v2 with per-scene vocabulary (`SKL`, `000003`, `000060`, `SGF`) and domain ignore list (`water bottle`, `gloves`, `shelf`, `floor box`).
 3. **Stage C (Contacts)**: Geometric finger-to-box closure, palm expansion, and 2-frame temporal debounce.
 
-Outputs per clip are structured under `D:/egohack_data/out/<clip_name>/`:
+Outputs per clip are structured under `D:/egohack_data/out/<clip_name>/` (or local `out/`):
 - `hands.jsonl`: per-frame keypoints, boxes, sides, visibility, and interpolation flags.
 - `objects.jsonl`: per-frame detected objects and confidence scores.
 - `contacts_frames.jsonl`: per-frame hand contact states and target object IDs.
 - `contacts.csv`: interval event table (`clip,t_start,t_end,hand,state,object_name,object_id,confidence`).
 - `overlay.mp4`: visual demonstration video with color-coded skeletons and contact vectors.
 - `metrics_hands.json`: throughput and detection metrics.
+
+> **Data Privacy & Publication Notice**: Generated pipeline outputs (`out/`), intermediate labels (`eval/labels/`, `eval/labels_ai_only.json`), and review queue tables (`eval/review_queue*.csv`) are generated locally on private test frames and are not published to public repositories per hackathon data rules.
 
 ---
 

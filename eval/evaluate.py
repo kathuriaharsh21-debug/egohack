@@ -4,6 +4,11 @@ Evaluates pipeline outputs against:
 (a) Human labels (eval/labels/stratified_labels.json, with 060-006 f10 excluded as old default flag)
 (b) Merged AI labels (eval/labels_ai_only.json, secondary stress test, not ground truth)
 
+Note on Publishing & Privacy:
+Ground truth label files (eval/labels/*, eval/labels_ai_only.json) and generated review queues
+(eval/review_queue*.csv) are generated locally on private test frames and are not published
+to public repositories per hackathon data rules.
+
 Features:
 - Alignment: Matches each labeled frame to the nearest processed frame within +-1 frame.
 - Test split opened on 2026-11-01 06:21 IST; strictly NO pipeline tuning on test results.
