@@ -56,10 +56,10 @@ from live.panel_3d import render_3d
 
 # ── Generic webcam class list ───────────────────────────────────────────────
 WEBCAM_CLASSES = [
-    "tool", "bottle", "cup", "keyboard", "mouse", "pen", "book",
-    "phone", "laptop", "box", "bag", "cloth", "cable", "part", "table"
+    "phone", "cell phone", "pen", "tool", "cup", "bottle",
+    "mouse", "keyboard", "book", "box", "held object", "table", "desk"
 ]
-WEBCAM_FIXED = {"table", "desk", "shelf"}
+WEBCAM_FIXED = {"table", "desk"}
 
 EVENT_PANEL_W = 220   # pixels reserved on the right for event log
 PANEL_3D_W    = 300   # 3D panel width
@@ -162,12 +162,12 @@ def run(
     if source == "clip" and clip_name:
         classes, fixed_classes = get_scene_vocabulary_for_clip(clip_name, config)
         scene_label = clip_name
+        ignore_classes = set(c.lower() for c in obj_cfg.get("ignore_classes", []))
     else:
         classes = WEBCAM_CLASSES
         fixed_classes = WEBCAM_FIXED
         scene_label = "webcam"
-
-    ignore_classes = set(c.lower() for c in obj_cfg.get("ignore_classes", []))
+        ignore_classes = set()  # Do not ignore phone or desk objects on webcam!
 
     # Clip path
     clip_path: Optional[str] = None
@@ -388,6 +388,9 @@ def run(
                 )
         except Exception as e:
             print(f"[app] Hand detect error: {e}")
+        if cap.source == "webcam":
+            for h in last_frame_hands.hands:
+                h.is_wearer = True
         hand_ms = (time.perf_counter() - t_h0) * 1000.0
         stage_times["hands"].append(hand_ms)
 
