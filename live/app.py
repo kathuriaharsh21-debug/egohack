@@ -307,7 +307,7 @@ def run(
         if key == ord('q'):
             break
         elif key == ord('s'):
-            # Switch source
+            # Switch source cleanly
             cap.stop()
             source = "clip" if cap.source == "webcam" else "webcam"
             cap = CaptureThread(
@@ -316,6 +316,16 @@ def run(
                 webcam_index=0,
             )
             cap.start()
+
+            # Cleanly reset tracking history so timestamps/filters start fresh
+            hand_det.last_timestamp_ms = -1
+            hand_det.tracker.tracks.clear()
+            hand_det.tracker.next_track_id = 0
+            hand_det.tracker.side_flip_log.clear()
+            last_frame_hands = FrameHands(frame=0, t=0.0, hands=[])
+            last_frame_contacts = FrameContacts(frame=0, t=0.0, contacts=[])
+            last_objects = []
+            frame_counter = -1
         elif key == ord('o'):
             objects_on = not objects_on
         elif key == ord('3'):
