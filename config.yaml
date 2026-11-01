@@ -12,7 +12,6 @@ data:
   clips_dir: "data/clips"
   weights_dir: "weights"
   out_dir: "out"
-
 models:
   hand_landmarker: "weights/hand_landmarker.task"
   confidence_threshold: 0.5
@@ -38,6 +37,8 @@ objects:
         - "circuit board"
         - "tape dispenser"
         - "tool"
+        - "held workpiece"
+        - "component"
       fixed_classes: []
     "000003":
       classes:
@@ -46,6 +47,7 @@ objects:
         - "metal clamp"
         - "small metal part"
         - "grinding wheel"
+        - "held workpiece"
       fixed_classes:
         - "grinding wheel"
     "000060":
@@ -54,6 +56,7 @@ objects:
         - "stone slab"
         - "roller"
         - "conveyor"
+        - "held workpiece"
       fixed_classes:
         - "conveyor"
     SGF:
@@ -63,11 +66,14 @@ objects:
         - "drill"
         - "saw"
         - "tool"
+        - "held workpiece"
       fixed_classes: []
     default:
       classes:
         - "tool"
         - "part"
+        - "held workpiece"
+        - "component"
         - "box"
         - "machine"
         - "table"
@@ -76,7 +82,7 @@ objects:
         - "table"
   contact:
     fingertip_indices: [4, 8, 12, 16, 20]
-    min_fingertips: 2
-    expansion_ratio: 0.15
+    min_fingertips: 1
+    expansion_ratio: 0.22
     min_held_frames: 2
-    min_hand_obj_iou: 0.08
+    min_hand_obj_iou: 0.05
