@@ -98,7 +98,9 @@ class CaptureThread:
     def _open(self) -> cv2.VideoCapture:
         """Try webcam; fall back to clip on failure."""
         if self.source == "webcam":
-            cap = cv2.VideoCapture(self.webcam_index)
+            import os
+            backend = cv2.CAP_DSHOW if os.name == "nt" else cv2.CAP_ANY
+            cap = cv2.VideoCapture(self.webcam_index, backend)
             if cap.isOpened():
                 self.width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
                 self.height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
