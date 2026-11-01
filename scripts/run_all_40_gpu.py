@@ -56,3 +56,4 @@ for idx, clip_path in enumerate(clips, 1):
 
 total_dur = time.perf_counter() - start_time
 print(f"\nALL 40 CLIPS COMPLETED IN {total_dur/3600:.2f} hours ({total_dur:.1f}s)")
+

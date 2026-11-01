@@ -103,3 +103,4 @@ def render_3d(
                     cv2.FONT_HERSHEY_SIMPLEX, 0.35, color, 1, cv2.LINE_AA)
 
     return panel
+

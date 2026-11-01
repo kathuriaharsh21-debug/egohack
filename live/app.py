@@ -142,6 +142,9 @@ def run(
     source: str = "webcam",
     clip_name: Optional[str] = None,
     config_path: str = "config.yaml",
+    max_seconds: Optional[float] = None,
+    start_objects_on: bool = True,
+    headless: bool = False,
 ) -> None:
     """Entry-point for the live demo."""
     config = load_config(config_path)
@@ -236,7 +239,7 @@ def run(
         obj_thread.start()
 
     # ── State ─────────────────────────────────────────────────────────────
-    objects_on   = True
+    objects_on   = start_objects_on
     show_3d      = False
     paused       = False
     recording    = False
@@ -244,6 +247,7 @@ def run(
 
     fps_smooth   = 30.0
     prev_t       = time.perf_counter()
+    start_app_t  = time.perf_counter()
 
     hand_ms      = 0.0
     obj_ms       = 0.0
@@ -255,14 +259,24 @@ def run(
     frame_counter       = 0
     rotation_deg        = 0.0
 
-    cv2.namedWindow("Live Auto-Annotator", cv2.WINDOW_NORMAL)
-    cv2.resizeWindow("Live Auto-Annotator", w_frame + EVENT_PANEL_W, h_frame)
+    if not headless:
+        cv2.namedWindow("Live Auto-Annotator", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("Live Auto-Annotator", w_frame + EVENT_PANEL_W, h_frame)
 
     print("[app] Running. Press Q to quit.")
 
     while True:
+        # Check max-seconds timeout for automated benchmark/tests
+        elapsed_sec = time.perf_counter() - start_app_t
+        if max_seconds is not None and elapsed_sec >= max_seconds:
+            mean_fps = frame_counter / max(1e-3, elapsed_sec)
+            print(f"[BENCHMARK] Elapsed: {elapsed_sec:.2f}s | Frames: {frame_counter} | Mean FPS: {mean_fps:.2f} | objects_on={objects_on}")
+            break
+
         # ── Keyboard ──────────────────────────────────────────────────────
-        key = cv2.waitKey(1) & 0xFF
+        key = 255
+        if not headless:
+            key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             break
         elif key == ord('s'):
@@ -369,6 +383,14 @@ def run(
         # ── Draw ─────────────────────────────────────────────────────────
         display = frame.copy()
 
+        # Check review criteria (threshold 0.85 or predicted hand)
+        has_pred_hand = any(not h.visible for h in last_frame_hands.hands)
+        has_low_conf_contact = any(
+            c.state != "none" and getattr(c, "confidence", 1.0) < 0.85
+            for c in last_frame_contacts.contacts
+        )
+        cur_needs_review = has_pred_hand or has_low_conf_contact
+
         ov.draw_hands(display, last_frame_hands)
         if objects_on:
             ov.draw_objects(display, last_objects, fixed_classes=fixed_classes)
@@ -379,6 +401,7 @@ def run(
             device=device_str, mode=cap.source, frame_count=frame_counter,
             paused=paused, objects_on=objects_on,
             show_3d=show_3d, recording=recording,
+            needs_review=cur_needs_review,
         )
         ov.draw_key_hints(display)
 
@@ -413,7 +436,8 @@ def run(
                 canvas[y1:h_frame, 0:x2] = roi
 
         _last_display = canvas
-        cv2.imshow("Live Auto-Annotator", canvas)
+        if not headless:
+            cv2.imshow("Live Auto-Annotator", canvas)
 
         if recording and video_writer:
             try:
@@ -443,9 +467,23 @@ if __name__ == "__main__":
                         help="Clip stem name (e.g. mytronlabs-000003-013)")
     parser.add_argument("--config", type=str, default="config.yaml",
                         help="Path to config.yaml")
+    parser.add_argument("--max-seconds", type=float, default=None,
+                        help="Auto-quit after N seconds (for benchmarking/testing)")
+    parser.add_argument("--no-objects", action="store_true",
+                        help="Start with object detector toggled off")
+    parser.add_argument("--headless", action="store_true",
+                        help="Run without displaying OpenCV window (for benchmarking)")
     args = parser.parse_args()
 
     if args.source == "clip" and not args.clip:
         parser.error("--clip is required when --source=clip")
 
-    run(source=args.source, clip_name=args.clip, config_path=args.config)
+    run(
+        source=args.source,
+        clip_name=args.clip,
+        config_path=args.config,
+        max_seconds=args.max_seconds,
+        start_objects_on=not args.no_objects,
+        headless=args.headless,
+    )
+

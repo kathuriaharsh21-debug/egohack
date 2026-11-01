@@ -1,0 +1,960 @@
+{
+  "test_opened_time": "2026-11-01 06:21 IST",
+  "excluded_human_keys": [
+    "mytronlabs-000060-006_10"
+  ],
+  "alignment": "nearest_processed_frame_within_1_frame",
+  "spotcheck": null,
+  "human": {
+    "tune": {
+      "split": "tune",
+      "labels_evaluated_count": 9,
+      "overall": {
+        "n_frames": 9,
+        "hand_presence_recall": {
+          "num": 3,
+          "denom": 7,
+          "formatted": "42.9% (3/7, n=7) (too small to trust)"
+        },
+        "false_detection_rate": {
+          "num": 0,
+          "denom": 1,
+          "formatted": "0.0% (0/1, n=1) (too small to trust)"
+        },
+        "side_accuracy": {
+          "num": 0,
+          "denom": 3,
+          "formatted": "0.0% (0/3, n=3) (too small to trust)"
+        },
+        "contact_accuracy": {
+          "num": 0,
+          "denom": 3,
+          "formatted": "0.0% (0/3, n=3) (too small to trust)"
+        },
+        "confusion_matrix": {
+          "none": {
+            "none": 0,
+            "portable": 1,
+            "fixed": 0
+          },
+          "portable": {
+            "none": 2,
+            "portable": 0,
+            "fixed": 0
+          },
+          "fixed": {
+            "none": 0,
+            "portable": 0,
+            "fixed": 0
+          }
+        },
+        "predicted_hands_share": {
+          "num": 0,
+          "denom": 9,
+          "formatted": "0.0% (0/9, n=9) (too small to trust)"
+        },
+        "review_queue_catch_rate": {
+          "num": 5,
+          "denom": 7,
+          "random_mean": 4.1,
+          "formatted": "Queue: 5/7 (71.4%, n=7) (too small to trust) vs Random: 4.1/7 (58.6%)"
+        }
+      },
+      "easy": {
+        "n_frames": 6,
+        "hand_presence_recall": {
+          "num": 3,
+          "denom": 6,
+          "formatted": "50.0% (3/6, n=6) (too small to trust)"
+        },
+        "false_detection_rate": {
+          "num": 0,
+          "denom": 0,
+          "formatted": "N/A (n=0)"
+        },
+        "side_accuracy": {
+          "num": 0,
+          "denom": 3,
+          "formatted": "0.0% (0/3, n=3) (too small to trust)"
+        },
+        "contact_accuracy": {
+          "num": 0,
+          "denom": 3,
+          "formatted": "0.0% (0/3, n=3) (too small to trust)"
+        },
+        "confusion_matrix": {
+          "none": {
+            "none": 0,
+            "portable": 1,
+            "fixed": 0
+          },
+          "portable": {
+            "none": 2,
+            "portable": 0,
+            "fixed": 0
+          },
+          "fixed": {
+            "none": 0,
+            "portable": 0,
+            "fixed": 0
+          }
+        },
+        "predicted_hands_share": {
+          "num": 0,
+          "denom": 6,
+          "formatted": "0.0% (0/6, n=6) (too small to trust)"
+        },
+        "review_queue_catch_rate": {
+          "num": 4,
+          "denom": 6,
+          "random_mean": 3.2,
+          "formatted": "Queue: 4/6 (66.7%, n=6) (too small to trust) vs Random: 3.2/6 (53.3%)"
+        }
+      },
+      "hard": {
+        "n_frames": 3,
+        "hand_presence_recall": {
+          "num": 0,
+          "denom": 1,
+          "formatted": "0.0% (0/1, n=1) (too small to trust)"
+        },
+        "false_detection_rate": {
+          "num": 0,
+          "denom": 1,
+          "formatted": "0.0% (0/1, n=1) (too small to trust)"
+        },
+        "side_accuracy": {
+          "num": 0,
+          "denom": 0,
+          "formatted": "N/A (n=0)"
+        },
+        "contact_accuracy": {
+          "num": 0,
+          "denom": 0,
+          "formatted": "N/A (n=0)"
+        },
+        "confusion_matrix": {
+          "none": {
+            "none": 0,
+            "portable": 0,
+            "fixed": 0
+          },
+          "portable": {
+            "none": 0,
+            "portable": 0,
+            "fixed": 0
+          },
+          "fixed": {
+            "none": 0,
+            "portable": 0,
+            "fixed": 0
+          }
+        },
+        "predicted_hands_share": {
+          "num": 0,
+          "denom": 3,
+          "formatted": "0.0% (0/3, n=3) (too small to trust)"
+        },
+        "review_queue_catch_rate": {
+          "num": 1,
+          "denom": 1,
+          "random_mean": 0.9,
+          "formatted": "Queue: 1/1 (100.0%, n=1) (too small to trust) vs Random: 0.9/1 (90.0%)"
+        }
+      },
+      "mean_pipeline_fps": 35.36
+    },
+    "test": {
+      "split": "test",
+      "labels_evaluated_count": 11,
+      "overall": {
+        "n_frames": 11,
+        "hand_presence_recall": {
+          "num": 3,
+          "denom": 6,
+          "formatted": "50.0% (3/6, n=6) (too small to trust)"
+        },
+        "false_detection_rate": {
+          "num": 0,
+          "denom": 3,
+          "formatted": "0.0% (0/3, n=3) (too small to trust)"
+        },
+        "side_accuracy": {
+          "num": 3,
+          "denom": 4,
+          "formatted": "75.0% (3/4, n=4) (too small to trust)"
+        },
+        "contact_accuracy": {
+          "num": 1,
+          "denom": 4,
+          "formatted": "25.0% (1/4, n=4) (too small to trust)"
+        },
+        "confusion_matrix": {
+          "none": {
+            "none": 1,
+            "portable": 0,
+            "fixed": 0
+          },
+          "portable": {
+            "none": 2,
+            "portable": 0,
+            "fixed": 0
+          },
+          "fixed": {
+            "none": 1,
+            "portable": 0,
+            "fixed": 0
+          }
+        },
+        "predicted_hands_share": {
+          "num": 0,
+          "denom": 11,
+          "formatted": "0.0% (0/11, n=11) (too small to trust)"
+        },
+        "review_queue_catch_rate": {
+          "num": 5,
+          "denom": 6,
+          "random_mean": 4.8,
+          "formatted": "Queue: 5/6 (83.3%, n=6) (too small to trust) vs Random: 4.8/6 (80.0%)"
+        }
+      },
+      "easy": {
+        "n_frames": 5,
+        "hand_presence_recall": {
+          "num": 2,
+          "denom": 4,
+          "formatted": "50.0% (2/4, n=4) (too small to trust)"
+        },
+        "false_detection_rate": {
+          "num": 0,
+          "denom": 1,
+          "formatted": "0.0% (0/1, n=1) (too small to trust)"
+        },
+        "side_accuracy": {
+          "num": 1,
+          "denom": 2,
+          "formatted": "50.0% (1/2, n=2) (too small to trust)"
+        },
+        "contact_accuracy": {
+          "num": 0,
+          "denom": 2,
+          "formatted": "0.0% (0/2, n=2) (too small to trust)"
+        },
+        "confusion_matrix": {
+          "none": {
+            "none": 0,
+            "portable": 0,
+            "fixed": 0
+          },
+          "portable": {
+            "none": 2,
+            "portable": 0,
+            "fixed": 0
+          },
+          "fixed": {
+            "none": 0,
+            "portable": 0,
+            "fixed": 0
+          }
+        },
+        "predicted_hands_share": {
+          "num": 0,
+          "denom": 5,
+          "formatted": "0.0% (0/5, n=5) (too small to trust)"
+        },
+        "review_queue_catch_rate": {
+          "num": 3,
+          "denom": 4,
+          "random_mean": 3.0,
+          "formatted": "Queue: 3/4 (75.0%, n=4) (too small to trust) vs Random: 3.0/4 (75.0%)"
+        }
+      },
+      "hard": {
+        "n_frames": 6,
+        "hand_presence_recall": {
+          "num": 1,
+          "denom": 2,
+          "formatted": "50.0% (1/2, n=2) (too small to trust)"
+        },
+        "false_detection_rate": {
+          "num": 0,
+          "denom": 2,
+          "formatted": "0.0% (0/2, n=2) (too small to trust)"
+        },
+        "side_accuracy": {
+          "num": 2,
+          "denom": 2,
+          "formatted": "100.0% (2/2, n=2) (too small to trust)"
+        },
+        "contact_accuracy": {
+          "num": 1,
+          "denom": 2,
+          "formatted": "50.0% (1/2, n=2) (too small to trust)"
+        },
+        "confusion_matrix": {
+          "none": {
+            "none": 1,
+            "portable": 0,
+            "fixed": 0
+          },
+          "portable": {
+            "none": 0,
+            "portable": 0,
+            "fixed": 0
+          },
+          "fixed": {
+            "none": 1,
+            "portable": 0,
+            "fixed": 0
+          }
+        },
+        "predicted_hands_share": {
+          "num": 0,
+          "denom": 6,
+          "formatted": "0.0% (0/6, n=6) (too small to trust)"
+        },
+        "review_queue_catch_rate": {
+          "num": 2,
+          "denom": 2,
+          "random_mean": 1.9,
+          "formatted": "Queue: 2/2 (100.0%, n=2) (too small to trust) vs Random: 1.9/2 (95.0%)"
+        }
+      },
+      "mean_pipeline_fps": 35.36
+    }
+  },
+  "ai_only": {
+    "tune": {
+      "split": "tune",
+      "labels_evaluated_count": 30,
+      "overall": {
+        "n_frames": 30,
+        "hand_presence_recall": {
+          "num": 25,
+          "denom": 27,
+          "formatted": "92.6% (25/27, n=27) (too small to trust)"
+        },
+        "false_detection_rate": {
+          "num": 1,
+          "denom": 1,
+          "formatted": "100.0% (1/1, n=1) (too small to trust)"
+        },
+        "side_accuracy": {
+          "num": 0,
+          "denom": 0,
+          "formatted": "N/A (omitted on merged AI labels)"
+        },
+        "contact_accuracy": {
+          "num": 3,
+          "denom": 24,
+          "formatted": "12.5% (3/24, n=24) (too small to trust)"
+        },
+        "confusion_matrix": {
+          "none": {
+            "none": 2,
+            "portable": 0,
+            "fixed": 0
+          },
+          "portable": {
+            "none": 21,
+            "portable": 1,
+            "fixed": 0
+          },
+          "fixed": {
+            "none": 0,
+            "portable": 0,
+            "fixed": 0
+          }
+        },
+        "predicted_hands_share": {
+          "num": 0,
+          "denom": 30,
+          "formatted": "0.0% (0/30, n=30)"
+        },
+        "review_queue_catch_rate": {
+          "num": 16,
+          "denom": 24,
+          "random_mean": 17.2,
+          "formatted": "Queue: 16/24 (66.7%, n=24) (too small to trust) vs Random: 17.2/24 (71.7%)"
+        }
+      },
+      "easy": {
+        "n_frames": 26,
+        "hand_presence_recall": {
+          "num": 22,
+          "denom": 24,
+          "formatted": "91.7% (22/24, n=24) (too small to trust)"
+        },
+        "false_detection_rate": {
+          "num": 0,
+          "denom": 0,
+          "formatted": "N/A (n=0)"
+        },
+        "side_accuracy": {
+          "num": 0,
+          "denom": 0,
+          "formatted": "N/A (omitted on merged AI labels)"
+        },
+        "contact_accuracy": {
+          "num": 2,
+          "denom": 20,
+          "formatted": "10.0% (2/20, n=20) (too small to trust)"
+        },
+        "confusion_matrix": {
+          "none": {
+            "none": 1,
+            "portable": 0,
+            "fixed": 0
+          },
+          "portable": {
+            "none": 18,
+            "portable": 1,
+            "fixed": 0
+          },
+          "fixed": {
+            "none": 0,
+            "portable": 0,
+            "fixed": 0
+          }
+        },
+        "predicted_hands_share": {
+          "num": 0,
+          "denom": 26,
+          "formatted": "0.0% (0/26, n=26) (too small to trust)"
+        },
+        "review_queue_catch_rate": {
+          "num": 14,
+          "denom": 20,
+          "random_mean": 14.2,
+          "formatted": "Queue: 14/20 (70.0%, n=20) (too small to trust) vs Random: 14.2/20 (71.0%)"
+        }
+      },
+      "hard": {
+        "n_frames": 4,
+        "hand_presence_recall": {
+          "num": 3,
+          "denom": 3,
+          "formatted": "100.0% (3/3, n=3) (too small to trust)"
+        },
+        "false_detection_rate": {
+          "num": 1,
+          "denom": 1,
+          "formatted": "100.0% (1/1, n=1) (too small to trust)"
+        },
+        "side_accuracy": {
+          "num": 0,
+          "denom": 0,
+          "formatted": "N/A (omitted on merged AI labels)"
+        },
+        "contact_accuracy": {
+          "num": 1,
+          "denom": 4,
+          "formatted": "25.0% (1/4, n=4) (too small to trust)"
+        },
+        "confusion_matrix": {
+          "none": {
+            "none": 1,
+            "portable": 0,
+            "fixed": 0
+          },
+          "portable": {
+            "none": 3,
+            "portable": 0,
+            "fixed": 0
+          },
+          "fixed": {
+            "none": 0,
+            "portable": 0,
+            "fixed": 0
+          }
+        },
+        "predicted_hands_share": {
+          "num": 0,
+          "denom": 4,
+          "formatted": "0.0% (0/4, n=4) (too small to trust)"
+        },
+        "review_queue_catch_rate": {
+          "num": 2,
+          "denom": 4,
+          "random_mean": 3.2,
+          "formatted": "Queue: 2/4 (50.0%, n=4) (too small to trust) vs Random: 3.2/4 (80.0%)"
+        }
+      },
+      "mean_pipeline_fps": 35.36
+    },
+    "test": {
+      "split": "test",
+      "labels_evaluated_count": 49,
+      "overall": {
+        "n_frames": 49,
+        "hand_presence_recall": {
+          "num": 40,
+          "denom": 43,
+          "formatted": "93.0% (40/43, n=43)"
+        },
+        "false_detection_rate": {
+          "num": 0,
+          "denom": 1,
+          "formatted": "0.0% (0/1, n=1) (too small to trust)"
+        },
+        "side_accuracy": {
+          "num": 0,
+          "denom": 0,
+          "formatted": "N/A (omitted on merged AI labels)"
+        },
+        "contact_accuracy": {
+          "num": 3,
+          "denom": 36,
+          "formatted": "8.3% (3/36, n=36)"
+        },
+        "confusion_matrix": {
+          "none": {
+            "none": 0,
+            "portable": 0,
+            "fixed": 0
+          },
+          "portable": {
+            "none": 32,
+            "portable": 3,
+            "fixed": 0
+          },
+          "fixed": {
+            "none": 1,
+            "portable": 0,
+            "fixed": 0
+          }
+        },
+        "predicted_hands_share": {
+          "num": 0,
+          "denom": 49,
+          "formatted": "0.0% (0/49, n=49)"
+        },
+        "review_queue_catch_rate": {
+          "num": 24,
+          "denom": 36,
+          "random_mean": 24.0,
+          "formatted": "Queue: 24/36 (66.7%, n=36) vs Random: 24.0/36 (66.7%)"
+        }
+      },
+      "easy": {
+        "n_frames": 46,
+        "hand_presence_recall": {
+          "num": 38,
+          "denom": 41,
+          "formatted": "92.7% (38/41, n=41)"
+        },
+        "false_detection_rate": {
+          "num": 0,
+          "denom": 1,
+          "formatted": "0.0% (0/1, n=1) (too small to trust)"
+        },
+        "side_accuracy": {
+          "num": 0,
+          "denom": 0,
+          "formatted": "N/A (omitted on merged AI labels)"
+        },
+        "contact_accuracy": {
+          "num": 3,
+          "denom": 34,
+          "formatted": "8.8% (3/34, n=34)"
+        },
+        "confusion_matrix": {
+          "none": {
+            "none": 0,
+            "portable": 0,
+            "fixed": 0
+          },
+          "portable": {
+            "none": 30,
+            "portable": 3,
+            "fixed": 0
+          },
+          "fixed": {
+            "none": 1,
+            "portable": 0,
+            "fixed": 0
+          }
+        },
+        "predicted_hands_share": {
+          "num": 0,
+          "denom": 46,
+          "formatted": "0.0% (0/46, n=46)"
+        },
+        "review_queue_catch_rate": {
+          "num": 23,
+          "denom": 34,
+          "random_mean": 22.1,
+          "formatted": "Queue: 23/34 (67.6%, n=34) vs Random: 22.1/34 (65.0%)"
+        }
+      },
+      "hard": {
+        "n_frames": 3,
+        "hand_presence_recall": {
+          "num": 2,
+          "denom": 2,
+          "formatted": "100.0% (2/2, n=2) (too small to trust)"
+        },
+        "false_detection_rate": {
+          "num": 0,
+          "denom": 0,
+          "formatted": "N/A (n=0)"
+        },
+        "side_accuracy": {
+          "num": 0,
+          "denom": 0,
+          "formatted": "N/A (omitted on merged AI labels)"
+        },
+        "contact_accuracy": {
+          "num": 0,
+          "denom": 2,
+          "formatted": "0.0% (0/2, n=2) (too small to trust)"
+        },
+        "confusion_matrix": {
+          "none": {
+            "none": 0,
+            "portable": 0,
+            "fixed": 0
+          },
+          "portable": {
+            "none": 2,
+            "portable": 0,
+            "fixed": 0
+          },
+          "fixed": {
+            "none": 0,
+            "portable": 0,
+            "fixed": 0
+          }
+        },
+        "predicted_hands_share": {
+          "num": 0,
+          "denom": 3,
+          "formatted": "0.0% (0/3, n=3) (too small to trust)"
+        },
+        "review_queue_catch_rate": {
+          "num": 1,
+          "denom": 2,
+          "random_mean": 1.6,
+          "formatted": "Queue: 1/2 (50.0%, n=2) (too small to trust) vs Random: 1.6/2 (80.0%)"
+        }
+      },
+      "mean_pipeline_fps": 35.36
+    }
+  },
+  "tune": {
+    "split": "tune",
+    "labels_evaluated_count": 9,
+    "overall": {
+      "n_frames": 9,
+      "hand_presence_recall": {
+        "num": 3,
+        "denom": 7,
+        "formatted": "42.9% (3/7, n=7) (too small to trust)"
+      },
+      "false_detection_rate": {
+        "num": 0,
+        "denom": 1,
+        "formatted": "0.0% (0/1, n=1) (too small to trust)"
+      },
+      "side_accuracy": {
+        "num": 0,
+        "denom": 3,
+        "formatted": "0.0% (0/3, n=3) (too small to trust)"
+      },
+      "contact_accuracy": {
+        "num": 0,
+        "denom": 3,
+        "formatted": "0.0% (0/3, n=3) (too small to trust)"
+      },
+      "confusion_matrix": {
+        "none": {
+          "none": 0,
+          "portable": 1,
+          "fixed": 0
+        },
+        "portable": {
+          "none": 2,
+          "portable": 0,
+          "fixed": 0
+        },
+        "fixed": {
+          "none": 0,
+          "portable": 0,
+          "fixed": 0
+        }
+      },
+      "predicted_hands_share": {
+        "num": 0,
+        "denom": 9,
+        "formatted": "0.0% (0/9, n=9) (too small to trust)"
+      },
+      "review_queue_catch_rate": {
+        "num": 5,
+        "denom": 7,
+        "random_mean": 4.1,
+        "formatted": "Queue: 5/7 (71.4%, n=7) (too small to trust) vs Random: 4.1/7 (58.6%)"
+      }
+    },
+    "easy": {
+      "n_frames": 6,
+      "hand_presence_recall": {
+        "num": 3,
+        "denom": 6,
+        "formatted": "50.0% (3/6, n=6) (too small to trust)"
+      },
+      "false_detection_rate": {
+        "num": 0,
+        "denom": 0,
+        "formatted": "N/A (n=0)"
+      },
+      "side_accuracy": {
+        "num": 0,
+        "denom": 3,
+        "formatted": "0.0% (0/3, n=3) (too small to trust)"
+      },
+      "contact_accuracy": {
+        "num": 0,
+        "denom": 3,
+        "formatted": "0.0% (0/3, n=3) (too small to trust)"
+      },
+      "confusion_matrix": {
+        "none": {
+          "none": 0,
+          "portable": 1,
+          "fixed": 0
+        },
+        "portable": {
+          "none": 2,
+          "portable": 0,
+          "fixed": 0
+        },
+        "fixed": {
+          "none": 0,
+          "portable": 0,
+          "fixed": 0
+        }
+      },
+      "predicted_hands_share": {
+        "num": 0,
+        "denom": 6,
+        "formatted": "0.0% (0/6, n=6) (too small to trust)"
+      },
+      "review_queue_catch_rate": {
+        "num": 4,
+        "denom": 6,
+        "random_mean": 3.2,
+        "formatted": "Queue: 4/6 (66.7%, n=6) (too small to trust) vs Random: 3.2/6 (53.3%)"
+      }
+    },
+    "hard": {
+      "n_frames": 3,
+      "hand_presence_recall": {
+        "num": 0,
+        "denom": 1,
+        "formatted": "0.0% (0/1, n=1) (too small to trust)"
+      },
+      "false_detection_rate": {
+        "num": 0,
+        "denom": 1,
+        "formatted": "0.0% (0/1, n=1) (too small to trust)"
+      },
+      "side_accuracy": {
+        "num": 0,
+        "denom": 0,
+        "formatted": "N/A (n=0)"
+      },
+      "contact_accuracy": {
+        "num": 0,
+        "denom": 0,
+        "formatted": "N/A (n=0)"
+      },
+      "confusion_matrix": {
+        "none": {
+          "none": 0,
+          "portable": 0,
+          "fixed": 0
+        },
+        "portable": {
+          "none": 0,
+          "portable": 0,
+          "fixed": 0
+        },
+        "fixed": {
+          "none": 0,
+          "portable": 0,
+          "fixed": 0
+        }
+      },
+      "predicted_hands_share": {
+        "num": 0,
+        "denom": 3,
+        "formatted": "0.0% (0/3, n=3) (too small to trust)"
+      },
+      "review_queue_catch_rate": {
+        "num": 1,
+        "denom": 1,
+        "random_mean": 0.9,
+        "formatted": "Queue: 1/1 (100.0%, n=1) (too small to trust) vs Random: 0.9/1 (90.0%)"
+      }
+    },
+    "mean_pipeline_fps": 35.36
+  },
+  "test": {
+    "split": "test",
+    "labels_evaluated_count": 11,
+    "overall": {
+      "n_frames": 11,
+      "hand_presence_recall": {
+        "num": 3,
+        "denom": 6,
+        "formatted": "50.0% (3/6, n=6) (too small to trust)"
+      },
+      "false_detection_rate": {
+        "num": 0,
+        "denom": 3,
+        "formatted": "0.0% (0/3, n=3) (too small to trust)"
+      },
+      "side_accuracy": {
+        "num": 3,
+        "denom": 4,
+        "formatted": "75.0% (3/4, n=4) (too small to trust)"
+      },
+      "contact_accuracy": {
+        "num": 1,
+        "denom": 4,
+        "formatted": "25.0% (1/4, n=4) (too small to trust)"
+      },
+      "confusion_matrix": {
+        "none": {
+          "none": 1,
+          "portable": 0,
+          "fixed": 0
+        },
+        "portable": {
+          "none": 2,
+          "portable": 0,
+          "fixed": 0
+        },
+        "fixed": {
+          "none": 1,
+          "portable": 0,
+          "fixed": 0
+        }
+      },
+      "predicted_hands_share": {
+        "num": 0,
+        "denom": 11,
+        "formatted": "0.0% (0/11, n=11) (too small to trust)"
+      },
+      "review_queue_catch_rate": {
+        "num": 5,
+        "denom": 6,
+        "random_mean": 4.8,
+        "formatted": "Queue: 5/6 (83.3%, n=6) (too small to trust) vs Random: 4.8/6 (80.0%)"
+      }
+    },
+    "easy": {
+      "n_frames": 5,
+      "hand_presence_recall": {
+        "num": 2,
+        "denom": 4,
+        "formatted": "50.0% (2/4, n=4) (too small to trust)"
+      },
+      "false_detection_rate": {
+        "num": 0,
+        "denom": 1,
+        "formatted": "0.0% (0/1, n=1) (too small to trust)"
+      },
+      "side_accuracy": {
+        "num": 1,
+        "denom": 2,
+        "formatted": "50.0% (1/2, n=2) (too small to trust)"
+      },
+      "contact_accuracy": {
+        "num": 0,
+        "denom": 2,
+        "formatted": "0.0% (0/2, n=2) (too small to trust)"
+      },
+      "confusion_matrix": {
+        "none": {
+          "none": 0,
+          "portable": 0,
+          "fixed": 0
+        },
+        "portable": {
+          "none": 2,
+          "portable": 0,
+          "fixed": 0
+        },
+        "fixed": {
+          "none": 0,
+          "portable": 0,
+          "fixed": 0
+        }
+      },
+      "predicted_hands_share": {
+        "num": 0,
+        "denom": 5,
+        "formatted": "0.0% (0/5, n=5) (too small to trust)"
+      },
+      "review_queue_catch_rate": {
+        "num": 3,
+        "denom": 4,
+        "random_mean": 3.0,
+        "formatted": "Queue: 3/4 (75.0%, n=4) (too small to trust) vs Random: 3.0/4 (75.0%)"
+      }
+    },
+    "hard": {
+      "n_frames": 6,
+      "hand_presence_recall": {
+        "num": 1,
+        "denom": 2,
+        "formatted": "50.0% (1/2, n=2) (too small to trust)"
+      },
+      "false_detection_rate": {
+        "num": 0,
+        "denom": 2,
+        "formatted": "0.0% (0/2, n=2) (too small to trust)"
+      },
+      "side_accuracy": {
+        "num": 2,
+        "denom": 2,
+        "formatted": "100.0% (2/2, n=2) (too small to trust)"
+      },
+      "contact_accuracy": {
+        "num": 1,
+        "denom": 2,
+        "formatted": "50.0% (1/2, n=2) (too small to trust)"
+      },
+      "confusion_matrix": {
+        "none": {
+          "none": 1,
+          "portable": 0,
+          "fixed": 0
+        },
+        "portable": {
+          "none": 0,
+          "portable": 0,
+          "fixed": 0
+        },
+        "fixed": {
+          "none": 1,
+          "portable": 0,
+          "fixed": 0
+        }
+      },
+      "predicted_hands_share": {
+        "num": 0,
+        "denom": 6,
+        "formatted": "0.0% (0/6, n=6) (too small to trust)"
+      },
+      "review_queue_catch_rate": {
+        "num": 2,
+        "denom": 2,
+        "random_mean": 1.9,
+        "formatted": "Queue: 2/2 (100.0%, n=2) (too small to trust) vs Random: 1.9/2 (95.0%)"
+      }
+    },
+    "mean_pipeline_fps": 35.36
+  }
+}

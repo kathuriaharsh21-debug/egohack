@@ -58,3 +58,4 @@ Main loop (per frame)
 - Webcam class list is generic (`tool, bottle, cup, …`); per-scene vocabularies apply only to known clips
 - 3D landmarks are MediaPipe's coordinate system (not MANO) — suitable for visual debugging only
 - FPS target: >15 fps with objects on; >30 fps objects off
+

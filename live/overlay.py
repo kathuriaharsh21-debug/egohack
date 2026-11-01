@@ -73,8 +73,13 @@ def draw_hands(frame: np.ndarray, frame_hands: FrameHands) -> None:
         label = f"{'L' if hand.side == 'left' else 'R'}-{hand.id}"
         if is_pred:
             label += " PRED"
-        cv2.putText(frame, label, (wx + 5, wy - 5),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 1, cv2.LINE_AA)
+            cv2.putText(frame, label, (wx + 5, wy - 5),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 1, cv2.LINE_AA)
+            cv2.putText(frame, "predicted hand, not counted", (wx + 5, wy + 12),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.38, color, 1, cv2.LINE_AA)
+        else:
+            cv2.putText(frame, label, (wx + 5, wy - 5),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 1, cv2.LINE_AA)
 
 
 def _draw_dashed_line(
@@ -175,6 +180,7 @@ def draw_hud(
     objects_on: bool = True,
     show_3d: bool = False,
     recording: bool = False,
+    needs_review: bool = False,
 ) -> None:
     """Draw performance and mode HUD in the top-left corner.
     No accuracy numbers are ever shown.
@@ -202,6 +208,14 @@ def draw_hud(
                     cv2.FONT_HERSHEY_SIMPLEX, 0.42, (0, 0, 0), 3, cv2.LINE_AA)
         cv2.putText(frame, line, (6, y),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.42, COL_HUD, 1, cv2.LINE_AA)
+
+    if needs_review:
+        badge_y = y0 + len(lines) * 18 + 4
+        # Draw high-visibility NEEDS REVIEW badge
+        cv2.rectangle(frame, (6, badge_y - 14), (160, badge_y + 4), (0, 0, 0), -1)
+        cv2.rectangle(frame, (6, badge_y - 14), (160, badge_y + 4), COL_REVIEW, 2)
+        cv2.putText(frame, "NEEDS REVIEW", (14, badge_y - 1),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.48, COL_REVIEW, 2, cv2.LINE_AA)
 
 
 # ---------------------------------------------------------------------------
@@ -255,3 +269,4 @@ def draw_key_hints(frame: np.ndarray) -> None:
                 cv2.FONT_HERSHEY_SIMPLEX, 0.38, (0, 0, 0), 3, cv2.LINE_AA)
     cv2.putText(frame, hint, (6, h - 8),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.38, (180, 180, 180), 1, cv2.LINE_AA)
+

@@ -29,6 +29,7 @@ objects:
     - "phone"
     - "shelf"
     - "box on floor"
+    - "floor box"
     - "gloves"
   scenes:
     SKL:
@@ -36,9 +37,7 @@ objects:
         - "green tube"
         - "wire"
         - "circuit board"
-        - "green sheet"
         - "tape dispenser"
-        - "scissors"
         - "tool"
       fixed_classes: []
     "000003":

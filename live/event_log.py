@@ -139,3 +139,4 @@ class EventLog:
                 ])
         except Exception:
             pass
+

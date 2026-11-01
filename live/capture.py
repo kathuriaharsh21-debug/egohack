@@ -136,3 +136,4 @@ class CaptureThread:
             with self._lock:
                 self._buf.append((frame, self._frame_idx, ts))
             self._frame_idx += 1
+

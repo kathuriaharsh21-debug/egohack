@@ -183,3 +183,32 @@
 - FPS (hands+YOLO sync, 500 frames): 12.5 fps sustained / 22.5 mean; live app uses ObjectThread so display is not blocked by YOLO
 - Run: python live/app.py --source webcam | --source clip --clip <name>
 - Keys: Q S O 3 R P V
+
+### Batch Stage A (Hands) Started: 2026-11-01 04:39:28 IST
+- [Stage A 37/40] `mytronlabs-000060-013`: 122.8s (2.05m) | 44.0 FPS | 5400 frames
+- [Stage A 38/40] `mytronlabs-000060-014`: 86.6s (1.44m) | 62.3 FPS | 5400 frames
+- [Stage A 39/40] `mytronlabs-000060-015`: 88.6s (1.48m) | 61.0 FPS | 5400 frames
+- [Stage A 40/40] `mytronlabs-000060-016`: 83.3s (1.39m) | 64.9 FPS | 5400 frames
+- Stage A Finished: 04:46:09 IST (processed 4 clips in 6.68 min)
+
+### Batch Stage B (Objects) Started: 2026-11-01 04:46:09 IST
+- [Stage B 01/40] `MTL-SGF00106-036`: 132.4s (2.21m) | 40.8 FPS | 5400 frames
+- [Stage B 02/40] `MTL-SKL00089-006`: 142.3s (2.37m) | 37.9 FPS | 5400 frames
+- [Stage B 03/40] `MTL-SKL00089-008`: 185.8s (3.10m) | 29.1 FPS | 5400 frames
+- [Stage B 04/40] `mytronlabs-000003-006`: 214.3s (3.57m) | 25.2 FPS | 5400 frames
+- [Stage B 05/40] `mytronlabs-000003-013`: 202.7s (3.38m) | 26.6 FPS | 5400 frames
+- [Stage B 06/40] `mytronlabs-000060-006`: 172.9s (2.88m) | 31.2 FPS | 5400 frames
+- [Stage B 07/40] `mytronlabs-000060-008`: 174.2s (2.90m) | 31.0 FPS | 5400 frames
+- [Stage B 37/40] `mytronlabs-000060-013`: 129.4s (2.16m) | 41.7 FPS | 5400 frames
+- [Stage B 38/40] `mytronlabs-000060-014`: 71.5s (1.19m) | 75.5 FPS | 5400 frames
+- [Stage B 39/40] `mytronlabs-000060-015`: 73.9s (1.23m) | 73.1 FPS | 5400 frames
+- [Stage B 40/40] `mytronlabs-000060-016`: 70.7s (1.18m) | 76.4 FPS | 5400 frames
+- Stage B Finished: 05:13:24 IST (processed 11 clips in 27.25 min)
+
+## Phase 6 - Evaluation, Benchmarks, Transparency & Final Delivery [DONE 07:00 IST 1-Nov-2026]
+- eval/honesty.md: Written with full sample sizes (n), easy/hard splits, per-clip recall, weak contact analysis (YOLO-World held-object deficit), test opening timestamp (2026-11-01 06:21 IST), review queue vs. random baseline ('review queue does not beat random yet'), external detector post-mortem.
+- Numbers Audit: Cleaned README.md, SLIDE_NOTES.md, and DEMO_OUTLINE.md. Marked all numbers with n < 30 as 'preliminary (too small to trust)'.
+- Automated Setup (scripts/setup.py): Created setup script to download MediaPipe tasks and auto-verify YOLO-World weights. Validated in fresh temporary clone with no pre-copied weights on a 10s excerpt.
+- Live App Updates (live/app.py & live/overlay.py): Added [NEEDS REVIEW] badge (Th=0.85) and 'predicted hand, not counted' overlay. Benchmarked at 7.33 FPS (objects off) and 6.94 FPS (objects on); zero crashes; automatic webcam fallback verified.
+- Demo Video Bystander Audit: Analyzed 2-minute demo clip 060-006 and documented all 32 bystander frames (clusters at f226-f248, f304, f3264-f3320); demo video kept local.
+- Repo Hygiene & Compliance: Ran scripts/scan_repo.py - verified 100% clean of raw videos, frames, model weights, API keys, or leaked links.

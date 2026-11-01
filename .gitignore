@@ -40,3 +40,5 @@ build/
 
 live/recordings/
 *.avi
+
+scratch/
